@@ -6,6 +6,7 @@ import { holdsSlot } from './slots';
 import { ApiError } from './http-errors';
 import { audit } from './audit';
 import { notifyOrder } from './notify';
+import { onlinePaymentsEnabled } from './payments';
 import { computeBill, type CouponRule } from '@/lib/pricing';
 import { BOOKING_DAYS, CITIES, PENDING_PAYMENT_MINUTES, SERVICEABLE_PINCODE_PREFIXES } from '@/config/lab';
 import { bookableDates, fromDbDate, toDbDate } from '@/lib/ist';
@@ -126,6 +127,7 @@ export async function createOrder(user: SessionUser, input: CreateOrderInput): P
 
   const slotDate = toDbDate(input.slot.date);
   const online = input.payMode === 'ONLINE';
+  if (online && !onlinePaymentsEnabled()) throw new ApiError(400, 'online_payment_off', 'Online payment is not available right now. Please choose pay at collection.');
 
   for (let attempt = 0; attempt < 5; attempt++) {
     try {

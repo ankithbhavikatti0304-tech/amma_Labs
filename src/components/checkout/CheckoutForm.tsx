@@ -16,7 +16,7 @@ import type { OrderDTO } from '@/lib/orders';
 type Gender = 'MALE' | 'FEMALE' | 'OTHER';
 const GENDERS: [Gender, string][] = [['MALE', 'Male'], ['FEMALE', 'Female'], ['OTHER', 'Other']];
 
-export function CheckoutForm({ days: initialDays, saved }: { days: SlotDay[]; saved: SavedDetails }) {
+export function CheckoutForm({ days: initialDays, saved, online = true }: { days: SlotDay[]; saved: SavedDetails; online?: boolean }) {
   const router = useRouter();
   const { user, city } = useApp();
   const { items, coupon, hard, bill } = useCartDetail();
@@ -95,7 +95,7 @@ export function CheckoutForm({ days: initialDays, saved }: { days: SlotDay[]; sa
           address: bill.homeCollection ? { line: addr.trim(), pincode: pin } : null,
           city,
           slot: { date: day!.date, slotId },
-          payMode: pay,
+          payMode: online ? pay : 'COD',
           expectedTotal: total,
         },
         { 'Idempotency-Key': key.current },
@@ -183,7 +183,9 @@ export function CheckoutForm({ days: initialDays, saved }: { days: SlotDay[]; sa
             <div className="step-h"><span>{step(4)}</span><h2>Payment</h2></div>
             <div className="stack" style={{ gap: 10 }}>
               <label className="check"><input type="radio" name="pay" checked={pay === 'COD'} onChange={() => setPay('COD')} /><span><b>Pay at collection</b><br /><span className="muted" style={{ fontSize: 13 }}>Cash or UPI to our phlebotomist</span></span></label>
-              <label className="check"><input type="radio" name="pay" checked={pay === 'ONLINE'} onChange={() => setPay('ONLINE')} /><span><b>Pay online now</b><br /><span className="muted" style={{ fontSize: 13 }}>UPI, card or netbanking</span></span></label>
+              {online ? (
+                <label className="check"><input type="radio" name="pay" checked={pay === 'ONLINE'} onChange={() => setPay('ONLINE')} /><span><b>Pay online now</b><br /><span className="muted" style={{ fontSize: 13 }}>UPI, card or netbanking</span></span></label>
+              ) : null}
             </div>
             <div className="sum" style={{ marginTop: 18 }}>
               {items.map((t) => <div key={t.id}><span style={{ minWidth: 0 }}>{t.name}</span><span>{inr(t.price)}</span></div>)}

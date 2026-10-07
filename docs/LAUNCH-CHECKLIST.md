@@ -27,16 +27,16 @@ Tick each line before real patients use the site. Things the code cannot decide 
 - [ ] Postgres (pooled `DATABASE_URL`, direct `DIRECT_URL`), backups on, point-in-time recovery if offered.
 - [ ] `APP_SECRET`, `CRON_SECRET` generated (`openssl rand -base64 48`), stored in the host's secret store only.
 - [ ] **MSG91**: DLT entity, sender id and OTP template approved; `SMS_PROVIDER=msg91`. Optionally templates for booking-confirmed, sample-collected and report-ready.
-- [ ] **Razorpay** live keys, auto-capture on, webhook created for `payment.captured`, `order.paid`, `payment.failed`.
+- [ ] **Payments.** Launching with pay-at-collection only: set `PAYMENT_PROVIDER=none`. Adding online payment later: Razorpay live keys, auto-capture on, webhook for `payment.captured`, `order.paid`, `payment.failed`, then `PAYMENT_PROVIDER=razorpay`.
 - [ ] **Bucket** created with *Block all public access*; server-side encryption on; access key limited to that bucket.
 - [ ] **WhatsApp Cloud API** (optional): templates `al_booking_confirmed`, `al_sample_collected`, `al_report_ready` approved.
 - [ ] `TRUST_PROXY=true` on Vercel. `APP_URL` is the final `https://` address.
 
 ## Prove it works
 
-- [ ] Run the full journey on the deployed site: book (cash), book (online), cancel, collect, enter results, release, read the report on a phone, download the PDF **and open it**.
+- [ ] Run the full journey on the deployed site: book (cash), book (online, if enabled), cancel, collect, enter results, release, read the report on a phone, download the PDF **and open it**.
 - [ ] Send one real OTP, one booking message of each kind.
-- [ ] Pay ₹1 for real and check the webhook flips the order, then refund it.
+- [ ] If online payment is on: pay ₹1 for real and check the webhook flips the order, then refund it.
 - [ ] Try to open one patient's report while logged in as another. It must look like a missing page.
 - [ ] Run the browser tests against staging (`npm run e2e`) or at least the accessibility scans.
 - [ ] Look at the site on a low-end Android phone on mobile data.

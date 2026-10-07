@@ -20,6 +20,12 @@ describe('environment validation', () => {
     expect(env().NODE_ENV).toBe('production');
   });
 
+  it('production accepts online payment switched off, with no gateway keys', () => {
+    const { RAZORPAY_KEY_ID: _a, RAZORPAY_KEY_SECRET: _b, RAZORPAY_WEBHOOK_SECRET: _c, ...rest } = prod;
+    setEnv({ ...rest, PAYMENT_PROVIDER: 'none' });
+    expect(env().PAYMENT_PROVIDER).toBe('none');
+  });
+
   it('production refuses the development providers, each with a clear reason', () => {
     setEnv({ ...prod, SMS_PROVIDER: 'dev', PAYMENT_PROVIDER: 'mock', STORAGE_DRIVER: 'local' });
     expect(() => env()).toThrow(/SMS_PROVIDER[^\n]*OTPs on screen/);

@@ -35,7 +35,8 @@ const schema = z
     MSG91_TEMPLATE_SAMPLE_COLLECTED: z.string().optional(),
     MSG91_TEMPLATE_REPORT_READY: z.string().optional(),
 
-    PAYMENT_PROVIDER: z.enum(['mock', 'razorpay']).default('mock'),
+    /** none: online payment is switched off and patients pay at collection. Allowed in production. */
+    PAYMENT_PROVIDER: z.enum(['mock', 'razorpay', 'none']).default('mock'),
     RAZORPAY_KEY_ID: z.string().optional(),
     RAZORPAY_KEY_SECRET: z.string().optional(),
     RAZORPAY_WEBHOOK_SECRET: z.string().optional(),

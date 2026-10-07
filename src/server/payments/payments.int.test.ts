@@ -5,6 +5,7 @@ import { createOrder, type CreateOrderInput } from '../orders';
 import { confirmCheckout, expireStaleOrders, handleWebhook, initPayment, markPaid } from './service';
 import { payments, mockWebhookSignature } from './index';
 import { retryNotifications } from '../notify';
+import { resetEnvCache } from '../env';
 import { bookableDates } from '@/lib/ist';
 import type { SessionUser } from '../auth/session';
 
@@ -28,6 +29,24 @@ beforeEach(async () => {
   const b = await db.user.create({ data: { phone: '9876500002', name: 'Someone Else' } });
   me = { id: a.id, name: a.name, phone: a.phone, role: 'PATIENT' };
   other = { id: b.id, name: b.name, phone: b.phone, role: 'PATIENT' };
+});
+
+describe('online payment switched off (PAYMENT_PROVIDER=none)', () => {
+  it('refuses an online order with a clear message and still takes a cash order', async () => {
+    const prev = process.env.PAYMENT_PROVIDER;
+    process.env.PAYMENT_PROVIDER = 'none';
+    resetEnvCache();
+    try {
+      await expect(createOrder(me, order())).rejects.toMatchObject({ status: 400, code: 'online_payment_off' });
+      expect(await db.order.count()).toBe(0);
+      await expect(handleWebhook('{}', 'x', null)).rejects.toMatchObject({ code: 'online_payment_off' });
+      const cod = await createOrder(me, order({ payMode: 'COD', idempotencyKey: crypto.randomUUID() }));
+      expect(cod).toMatchObject({ status: 'BOOKED' });
+    } finally {
+      if (prev === undefined) delete process.env.PAYMENT_PROVIDER; else process.env.PAYMENT_PROVIDER = prev;
+      resetEnvCache();
+    }
+  });
 });
 
 describe('starting a payment', () => {

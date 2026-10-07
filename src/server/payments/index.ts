@@ -3,6 +3,7 @@ import { createHmac, randomUUID } from 'node:crypto';
 import { env } from '../env';
 import { hmac, safeEqual } from '../crypto';
 import { log } from '../log';
+import { ApiError } from '../http-errors';
 
 export interface GatewayOrder {
   providerOrderId: string;
@@ -74,6 +75,14 @@ class MockProvider implements PaymentProvider {
 }
 
 let provider: PaymentProvider | undefined;
-export const payments = (): PaymentProvider => (provider ??= env().PAYMENT_PROVIDER === 'razorpay' ? new RazorpayProvider() : new MockProvider());
+/** False when PAYMENT_PROVIDER=none: the lab takes payment at collection only. */
+export const onlinePaymentsEnabled = () => env().PAYMENT_PROVIDER !== 'none';
+
+export const payments = (): PaymentProvider => {
+  if (provider) return provider;
+  const p = env().PAYMENT_PROVIDER;
+  if (p === 'none') throw new ApiError(404, 'online_payment_off', 'Online payment is not available. Please pay at collection.');
+  return (provider = p === 'razorpay' ? new RazorpayProvider() : new MockProvider());
+};
 export const _setPaymentProvider = (p: PaymentProvider | undefined) => { provider = p; };
 export const mockWebhookSignature = (raw: string) => hmac('mock-webhook', raw);
