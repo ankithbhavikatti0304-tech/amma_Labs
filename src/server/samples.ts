@@ -1,6 +1,7 @@
 import 'server-only';
 import { db } from './db';
 import { audit } from './audit';
+import { notifyOrder } from './notify';
 import { ApiError } from './http-errors';
 import type { SessionUser } from './auth/session';
 
@@ -21,7 +22,7 @@ export async function collectSample(user: SessionUser, code: string, opts: { bar
   const barcode = opts.barcode?.trim();
   if (barcode && !/^[A-Za-z0-9-]{4,40}$/.test(barcode)) throw new ApiError(400, 'invalid_barcode', 'The barcode should be 4–40 letters, numbers or dashes.');
 
-  return db.$transaction(async (tx) => {
+  const out = await db.$transaction(async (tx) => {
     const moved = await tx.order.updateMany({ where: { id: order.id, status: 'BOOKED' }, data: { status: 'SAMPLE_COLLECTED', ...(opts.paymentCollected && order.payMode === 'COD' ? { paymentStatus: 'PAID' as const } : {}) } });
     if (moved.count === 0) throw new ApiError(409, 'wrong_state', 'The sample for this order is already collected.');
     const n = (await tx.sample.count({ where: { orderId: order.id } })) + 1;
@@ -35,4 +36,6 @@ export async function collectSample(user: SessionUser, code: string, opts: { bar
     await audit(tx, { actorId: user.id, action: 'sample.collect', entity: 'Order', entityId: order.id, meta: { code: order.code, paymentCollected: !!opts.paymentCollected } });
     return { barcode: final };
   });
+  await notifyOrder(order.id, 'sample_collected');
+  return out;
 }

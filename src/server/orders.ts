@@ -5,8 +5,9 @@ import { loadSettings } from './settings';
 import { holdsSlot } from './slots';
 import { ApiError } from './http-errors';
 import { audit } from './audit';
+import { notifyOrder } from './notify';
 import { computeBill, type CouponRule } from '@/lib/pricing';
-import { BOOKING_DAYS, CITIES, SERVICEABLE_PINCODE_PREFIXES } from '@/config/lab';
+import { BOOKING_DAYS, CITIES, PENDING_PAYMENT_MINUTES, SERVICEABLE_PINCODE_PREFIXES } from '@/config/lab';
 import { bookableDates, fromDbDate, toDbDate } from '@/lib/ist';
 import { isValidPincode } from '@/lib/phone';
 import { statusIndex, type OrderDTO } from '@/lib/orders';
@@ -63,6 +64,7 @@ export function toOrderDTO(o: OrderRow): OrderDTO {
     createdAt: o.createdAt.toISOString(),
     hasReport: !!o.report,
     cancellable: o.status === 'BOOKED' || o.status === 'PENDING_PAYMENT',
+    holdExpiresAt: o.status === 'PENDING_PAYMENT' ? new Date(o.createdAt.getTime() + PENDING_PAYMENT_MINUTES * 60_000).toISOString() : null,
   };
 }
 
@@ -185,6 +187,7 @@ export async function createOrder(user: SessionUser, input: CreateOrderInput): P
         await audit(tx, { actorId: user.id, action: 'order.create', entity: 'Order', entityId: order.id, meta: { code: order.code, payMode: order.payMode, total: order.total } });
         return order;
       });
+      if (!online) await notifyOrder(created.id, 'booking_confirmed'); // online orders are confirmed when payment lands
       return toOrderDTO(created);
     } catch (e) {
       // Order-code collision (1 in ~10^9): pick another code. Same idempotency key raced: return the winner.

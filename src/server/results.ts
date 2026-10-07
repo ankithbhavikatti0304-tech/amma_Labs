@@ -2,6 +2,7 @@ import 'server-only';
 import { db } from './db';
 import { storage } from './storage';
 import { audit } from './audit';
+import { notifyOrder } from './notify';
 import { ApiError } from './http-errors';
 import { loadSettings } from './settings';
 import { renderReportPdf } from './pdf/report-pdf';
@@ -185,6 +186,7 @@ export async function releaseReport(user: SessionUser, code: string): Promise<{ 
     await audit(tx, { actorId: user.id, action: 'report.release', entity: 'Order', entityId: order.id, meta: { code: order.code } });
     return r;
   });
+  await notifyOrder(order.id, 'report_ready');
   return { reportId: row.id };
 }
 

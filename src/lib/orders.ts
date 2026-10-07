@@ -45,6 +45,8 @@ export interface OrderDTO {
   hasReport: boolean;
   /** Patients can cancel until the sample is collected. */
   cancellable: boolean;
+  /** For an unpaid online order: when its slot hold runs out. */
+  holdExpiresAt: string | null;
 }
 
 export const GENDER_LABEL = { MALE: 'Male', FEMALE: 'Female', OTHER: 'Other' } as const;

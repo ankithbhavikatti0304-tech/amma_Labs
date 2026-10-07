@@ -30,6 +30,10 @@ const schema = z
     MSG91_AUTH_KEY: z.string().optional(),
     /** DLT-registered OTP template id in MSG91. */
     MSG91_OTP_TEMPLATE_ID: z.string().optional(),
+    /** DLT template ids for booking messages. A missing one just means that message isn't sent by SMS. */
+    MSG91_TEMPLATE_BOOKING_CONFIRMED: z.string().optional(),
+    MSG91_TEMPLATE_SAMPLE_COLLECTED: z.string().optional(),
+    MSG91_TEMPLATE_REPORT_READY: z.string().optional(),
 
     PAYMENT_PROVIDER: z.enum(['mock', 'razorpay']).default('mock'),
     RAZORPAY_KEY_ID: z.string().optional(),

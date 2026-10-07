@@ -36,13 +36,24 @@ export async function upsertStaff(phone: string, name: string, role: string) {
   await c.end();
 }
 
-/** A fresh browser session logged in as someone (a new person is created if the number is new). */
+type State = Awaited<ReturnType<import('@playwright/test').BrowserContext['storageState']>>;
+const saved = new Map<string, State>();
+
+/**
+ * A browser session logged in as someone (a new person is created if the number is new).
+ * The first time we log in; after that we reuse the saved session, as a person with a long-lived
+ * login would, and as the 30-second OTP resend limit requires.
+ */
 export async function sessionFor(browser: Browser, phone: string, name = 'Test Person') {
-  const ctx = await browser.newContext({ reducedMotion: 'reduce' });
+  const known = saved.get(phone);
+  const ctx = await browser.newContext({ reducedMotion: 'reduce', ...(known ? { storageState: known } : {}) });
   const page = await ctx.newPage();
-  await page.goto('/login');
-  await login(page, phone, name);
-  await page.waitForURL((u) => !u.pathname.startsWith('/login'));
+  if (!known) {
+    await page.goto('/login');
+    await login(page, phone, name);
+    await page.waitForURL((u) => !u.pathname.startsWith('/login'));
+    saved.set(phone, await ctx.storageState());
+  }
   return { ctx, page };
 }
 
