@@ -1,0 +1,549 @@
+// Amma Labs data model. See docs/SPEC.md §3.
+// Money is stored as whole rupees (Int). Convert to paise only at the payment-gateway boundary.
+// Calendar dates (slotDate) are Asia/Kolkata calendar days stored as DATE.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PATIENT
+  PHLEBOTOMIST
+  TECHNICIAN
+  PATHOLOGIST
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT // online payment started, not yet confirmed. Holds a slot for a short time.
+  BOOKED
+  SAMPLE_COLLECTED
+  PROCESSING
+  REPORT_READY
+  CANCELLED
+}
+
+enum PayMode {
+  COD
+  ONLINE
+}
+
+enum PaymentStatus {
+  UNPAID // pay at collection, not yet collected
+  PENDING // online payment started
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum CouponType {
+  PERCENT
+  FLAT
+}
+
+enum ParameterKind {
+  NUMERIC // value + unit + reference range
+  CHOICE // one of a fixed list, e.g. Negative / Positive
+  TEXT // free-text note, e.g. radiologist impression
+}
+
+enum ResultFlag {
+  NORMAL
+  HIGH
+  LOW
+  ABNORMAL // for CHOICE / TEXT results
+}
+
+enum CallbackStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+enum PrescriptionStatus {
+  NEW
+  REVIEWED
+  CONVERTED
+  REJECTED
+}
+
+enum NotificationChannel {
+  SMS
+  WHATSAPP
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+// ───────────────────────── identity ─────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  /// 10-digit Indian mobile number, without +91.
+  phone          String    @unique
+  name           String
+  role           Role      @default(PATIENT)
+  active         Boolean   @default(true)
+  /// DPDP Act 2023: when the user accepted the privacy notice, and which version.
+  consentAt      DateTime?
+  consentVersion String?
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  sessions      Session[]
+  patients      Patient[]
+  addresses     Address[]
+  orders        Order[]        @relation("OrderOwner")
+  prescriptions Prescription[]
+  callbacks     CallbackRequest[]
+  assignedOrders Order[]       @relation("OrderPhlebotomist")
+
+  @@index([role])
+}
+
+/// Server-side session. The cookie holds a random token; only its SHA-256 is stored here,
+/// so a database leak does not yield usable sessions and a session can be revoked.
+model Session {
+  id          String    @id @default(cuid())
+  tokenHash   String    @unique
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  userAgent   String?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model OtpRequest {
+  id         String    @id @default(cuid())
+  phone      String
+  /// HMAC-SHA256(secret, phone:code). Never the code itself.
+  codeHash   String
+  /// Name typed on the login form. Only used if this phone has no account yet.
+  name       String?
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, createdAt])
+}
+
+/// Fixed-window counters used for rate limiting. Lives in Postgres so limits hold across
+/// serverless instances without extra infrastructure.
+model RateLimit {
+  key         String   @id
+  count       Int
+  windowStart DateTime
+}
+
+// ───────────────────────── patients ─────────────────────────
+
+model Patient {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  age       Int
+  gender    Gender
+  isSelf    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  orders Order[]
+
+  @@index([userId])
+}
+
+model Address {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  line      String
+  pincode   String
+  city      String
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  orders Order[]
+
+  @@index([userId])
+}
+
+// ───────────────────────── catalogue ─────────────────────────
+
+model Category {
+  /// Stable slug, e.g. "thyroid". Also used in URLs.
+  id         String  @id
+  name       String
+  icon       String
+  tint       String  @default("a")
+  mascot     String
+  mascotArg  String?
+  sort       Int     @default(0)
+
+  tests TestCategory[]
+}
+
+model Test {
+  /// Stable short id, e.g. "cbc". Used by the cart and by the mascot lookup.
+  id             String   @id
+  slug           String   @unique
+  name           String
+  isPackage      Boolean  @default(false)
+  /// How many parameters it includes, when worth showing ("88 tests").
+  parameterCount Int?
+  tatMinHours    Int
+  tatMaxHours    Int
+  price          Int
+  mrp            Int
+  fasting        Boolean  @default(false)
+  morningSample  Boolean  @default(false)
+  /// X-rays, scans and ECG: done at the centre, no home collection.
+  centreVisit    Boolean  @default(false)
+  popular        Boolean  @default(false)
+  includes       String[]
+  mascot         String
+  mascotArg      String?
+  tint           String   @default("a")
+  active         Boolean  @default(true)
+  sort           Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  categories TestCategory[]
+  parameters TestParameter[]
+  orderItems OrderItem[]
+
+  @@index([active, isPackage])
+  @@index([active, popular])
+}
+
+model TestCategory {
+  testId     String
+  categoryId String
+  position   Int      @default(0)
+  test       Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([testId, categoryId])
+  @@index([categoryId])
+}
+
+model Parameter {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  kind      ParameterKind @default(NUMERIC)
+  unit      String        @default("")
+  /// Default adult range. More specific ranges live in ReferenceRange.
+  refLow    Decimal?      @db.Decimal(12, 4)
+  refHigh   Decimal?      @db.Decimal(12, 4)
+  decimals  Int           @default(0)
+  /// For CHOICE parameters: allowed values, and which one is the normal one.
+  options   String[]
+  refText   String?
+
+  ranges  ReferenceRange[]
+  tests   TestParameter[]
+  results Result[]
+}
+
+/// Sex- and age-specific overrides. The lab must supply these; the seed only has the
+/// rough adult ranges from the prototype.
+model ReferenceRange {
+  id          String    @id @default(cuid())
+  parameterId String
+  parameter   Parameter @relation(fields: [parameterId], references: [id], onDelete: Cascade)
+  sex         Gender?
+  ageMin      Int?
+  ageMax      Int?
+  low         Decimal   @db.Decimal(12, 4)
+  high        Decimal   @db.Decimal(12, 4)
+
+  @@index([parameterId])
+}
+
+model TestParameter {
+  testId      String
+  parameterId String
+  /// Section heading on the report, e.g. "Lipid profile".
+  groupName   String?
+  position    Int       @default(0)
+  test        Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
+  parameter   Parameter @relation(fields: [parameterId], references: [id], onDelete: Cascade)
+
+  @@id([testId, parameterId])
+  @@index([parameterId])
+}
+
+model Coupon {
+  code      String     @id
+  description String
+  type      CouponType
+  /// PERCENT: percentage points. FLAT: rupees.
+  value     Int
+  /// PERCENT only: maximum discount in rupees.
+  cap       Int?
+  minOrder  Int        @default(0)
+  active    Boolean    @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  maxUses   Int?
+  usedCount Int        @default(0)
+  createdAt DateTime   @default(now())
+
+  orders Order[]
+}
+
+/// A bookable collection window, e.g. "6–8 am". Capacity is per window per day.
+model Slot {
+  id           String  @id
+  label        String
+  startMinutes Int
+  endMinutes   Int
+  /// Morning slots are the only ones open when a test needs fasting or a morning sample.
+  morning      Boolean @default(false)
+  capacity     Int     @default(20)
+  active       Boolean @default(true)
+  sort         Int     @default(0)
+
+  orders Order[]
+}
+
+/// Editable business settings (phone, WhatsApp, fees...). Falls back to code defaults.
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ───────────────────────── orders ─────────────────────────
+
+model Order {
+  id        String @id @default(cuid())
+  /// Human-friendly code shown to patients, e.g. AL-7K3QXM.
+  code      String @unique
+  userId    String
+  user      User   @relation("OrderOwner", fields: [userId], references: [id])
+  patientId String?
+  patient   Patient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  addressId String?
+  address   Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)
+
+  // Snapshots, so a report keeps showing who it was for even if saved details change.
+  patientName   String
+  patientAge    Int
+  patientGender Gender
+  homeCollection Boolean
+  addressLine   String?
+  pincode       String?
+  city          String
+
+  slotDate  DateTime @db.Date
+  slotId    String
+  slot      Slot     @relation(fields: [slotId], references: [id])
+  slotLabel String
+
+  status        OrderStatus   @default(BOOKED)
+  payMode       PayMode
+  paymentStatus PaymentStatus @default(UNPAID)
+  hardCopy      Boolean       @default(false)
+
+  couponCode     String?
+  coupon         Coupon? @relation(fields: [couponCode], references: [code])
+  /// Sum of MRPs, sum of selling prices, and the money lines of the bill.
+  mrpTotal       Int
+  priceTotal     Int
+  couponDiscount Int     @default(0)
+  collectionFee  Int     @default(0)
+  hardCopyFee    Int     @default(0)
+  total          Int
+
+  idempotencyKey String?
+  assignedToId   String?
+  assignedTo     User?   @relation("OrderPhlebotomist", fields: [assignedToId], references: [id], onDelete: SetNull)
+  cancelledAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  items    OrderItem[]
+  samples  Sample[]
+  results  Result[]
+  report   Report?
+  payments Payment[]
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@index([status, slotDate])
+  @@index([slotDate, slotId])
+  @@index([assignedToId, slotDate])
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  testId  String
+  test    Test   @relation(fields: [testId], references: [id])
+  /// Snapshots of what the patient was charged.
+  name    String
+  price   Int
+  mrp     Int
+
+  @@unique([orderId, testId])
+}
+
+model Sample {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  barcode        String   @unique
+  collectedAt    DateTime @default(now())
+  phlebotomistId String
+
+  @@index([orderId])
+}
+
+model Result {
+  id          String     @id @default(cuid())
+  orderId     String
+  order       Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  parameterId String
+  parameter   Parameter  @relation(fields: [parameterId], references: [id])
+  valueNum    Decimal?   @db.Decimal(14, 4)
+  valueText   String?
+  flag        ResultFlag
+  // Snapshots, so a report never changes if the lab edits ranges later.
+  unit        String     @default("")
+  refLow      Decimal?   @db.Decimal(12, 4)
+  refHigh     Decimal?   @db.Decimal(12, 4)
+  refText     String?
+  decimals    Int        @default(0)
+  enteredById String
+  enteredAt   DateTime   @default(now())
+  verifiedById String?
+  verifiedAt  DateTime?
+
+  @@unique([orderId, parameterId])
+  @@index([orderId])
+}
+
+model Report {
+  id               String   @id @default(cuid())
+  orderId          String   @unique
+  order            Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// Storage key of the generated PDF.
+  pdfKey           String?
+  releasedAt       DateTime @default(now())
+  releasedById     String
+  /// Shown on the report as the verifying pathologist.
+  pathologistName  String
+}
+
+// ───────────────────────── payments ─────────────────────────
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String
+  providerOrderId   String        @unique
+  providerPaymentId String?       @unique
+  /// In paise.
+  amount            Int
+  currency          String        @default("INR")
+  status            PaymentStatus @default(PENDING)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([orderId])
+}
+
+/// One row per webhook event we have already handled, so redeliveries do nothing.
+model WebhookEvent {
+  id         String   @id
+  provider   String
+  receivedAt DateTime @default(now())
+}
+
+// ───────────────────────── support & ops ─────────────────────────
+
+model CallbackRequest {
+  id          String         @id @default(cuid())
+  phone       String
+  name        String?
+  userId      String?
+  user        User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status      CallbackStatus @default(NEW)
+  note        String?
+  handledById String?
+  createdAt   DateTime       @default(now())
+
+  @@index([status, createdAt])
+}
+
+model Prescription {
+  id           String             @id @default(cuid())
+  userId       String
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storageKey   String
+  mimeType     String
+  sizeBytes    Int
+  originalName String
+  status       PrescriptionStatus @default(NEW)
+  note         String?
+  handledById  String?
+  createdAt    DateTime           @default(now())
+
+  @@index([status, createdAt])
+  @@index([userId])
+}
+
+/// Outbox for SMS / WhatsApp messages. Variables only — no result values.
+model Notification {
+  id        String              @id @default(cuid())
+  phone     String
+  channel   NotificationChannel
+  template  String
+  variables Json
+  status    NotificationStatus  @default(QUEUED)
+  attempts  Int                 @default(0)
+  lastError String?
+  sentAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  @@index([status, createdAt])
+}
+
+/// Who did what to which record. Never stores result values or OTPs.
+model AuditLog {
+  id        String   @id @default(cuid())
+  at        DateTime @default(now())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String
+  meta      Json?
+
+  @@index([entity, entityId])
+  @@index([actorId, at])
+}
