@@ -17,6 +17,12 @@ const securityHeaders = [
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // The report PDF reads its embedded Manrope fonts from disk at runtime; file tracing cannot see that, so ship them
+  // with the two routes that render PDFs. (Route keys are globs, hence the escaped brackets.)
+  outputFileTracingIncludes: {
+    '/api/staff/orders/\\[code\\]/release': ['./src/server/pdf/fonts/**/*'],
+    '/api/orders/\\[code\\]/report': ['./src/server/pdf/fonts/**/*'],
+  },
   serverExternalPackages: ['pdfkit', 'pg', '@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
   async headers() {
     return [
