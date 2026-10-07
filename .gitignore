@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+# next
+.next/
+out/
+next-env.d.ts
+# generated
+src/generated/
+# env — never commit real secrets
+.env
+.env.*
+!.env.example
+# local storage for dev uploads/report PDFs
+.storage/
+# tests
+coverage/
+playwright-report/
+test-results/
+# misc
+*.tsbuildinfo
+.DS_Store
+npm-debug.log*
