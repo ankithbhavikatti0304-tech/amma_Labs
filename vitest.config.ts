@@ -21,8 +21,7 @@ export default defineConfig({
           name: 'integration',
           include: ['src/**/*.int.test.ts'],
           environment: 'node',
-          // One real Postgres, so files run one after another.
-          fileParallelism: false,
+          // These share one real Postgres; the npm script runs them with --no-file-parallelism.
           globalSetup: ['./test/global-setup.ts'],
           setupFiles: ['./test/setup-env.ts'],
           testTimeout: 20_000,
