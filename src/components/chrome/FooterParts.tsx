@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { apiPost, ApiFailure } from '@/lib/client/api';
 import { isValidPhone, normalizePhone } from '@/lib/phone';
 import { toast } from '@/lib/client/ui';
@@ -32,12 +32,17 @@ export function CallbackForm() {
 }
 
 /** Light/dark switch. Stored in a cookie so the server renders the right theme with no flash. */
+const THEME_EVENT = 'al-theme';
+const subscribeTheme = (cb: () => void) => {
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', cb);
+  window.addEventListener(THEME_EVENT, cb);
+  return () => { mq.removeEventListener('change', cb); window.removeEventListener(THEME_EVENT, cb); };
+};
+const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; };
+
 export function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const t = document.documentElement.dataset.theme;
-    setDark(t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches);
-  }, []);
+  const dark = useSyncExternalStore(subscribeTheme, isDark, () => false);
   return (
     <button
       type="button"
@@ -47,7 +52,7 @@ export function ThemeToggle() {
         const next = dark ? 'light' : 'dark';
         document.documentElement.dataset.theme = next;
         document.cookie = `al_theme=${next}; path=/; max-age=31536000; samesite=lax`;
-        setDark(!dark);
+        window.dispatchEvent(new Event(THEME_EVENT));
       }}
     >
       Dark mode <i />

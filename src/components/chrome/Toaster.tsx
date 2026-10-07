@@ -1,18 +1,17 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useToast } from '@/lib/client/ui';
 import { Icon } from '@/components/Icon';
 
 export function Toaster() {
   const t = useToast();
-  const last = useRef('');
-  useEffect(() => {
-    if (t) last.current = t.msg;
-  }, [t]);
+  // Keep the text while it fades out.
+  const [last, setLast] = useState('');
+  if (t && t.msg !== last) setLast(t.msg);
   return (
     <div className={`toast${t ? ' show' : ''}`} role="status" aria-live="polite">
       <i><Icon name="check" size={12} /></i>
-      {t?.msg ?? last.current}
+      {t?.msg ?? last}
     </div>
   );
 }

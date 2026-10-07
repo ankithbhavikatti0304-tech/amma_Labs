@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Icon } from '@/components/Icon';
 import { ProductCard } from '@/components/catalogue/ProductCard';
@@ -11,12 +11,20 @@ import { waCartText, waLink } from '@/lib/whatsapp';
 const WORDS = ['thyroid profile', 'vitamin D', 'full body checkup', 'HbA1c', 'liver function test', 'allergy panel'];
 
 /** The big search pill, with the typing animation (static under reduced motion). */
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const onReducedMotion = (cb: () => void) => {
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+};
+
 export function HeroSearch() {
   const [text, setText] = useState(WORDS[0]!);
-  const [animating, setAnimating] = useState(false);
+  // On the server, assume reduced motion (static text); the browser answers after hydration.
+  const reduced = useSyncExternalStore(onReducedMotion, reducedMotion, () => true);
+  const animating = !reduced;
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    setAnimating(true);
+    if (reduced) return;
     let w = 0, c = 0, del = false, timer: ReturnType<typeof setTimeout>;
     const tick = () => {
       const word = WORDS[w]!;
@@ -29,7 +37,7 @@ export function HeroSearch() {
     };
     timer = setTimeout(tick, 900);
     return () => clearTimeout(timer);
-  }, []);
+  }, [reduced]);
   return (
     <button type="button" className="hsearch" onClick={openPalette} aria-label="Search tests">
       <Icon name="search" size={22} />

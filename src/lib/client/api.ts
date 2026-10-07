@@ -35,6 +35,7 @@ async function call<T>(method: string, url: string, body?: unknown, headers?: Re
 
 export const apiGet = <T,>(url: string) => call<T>('GET', url);
 export const apiPost = <T,>(url: string, body?: unknown, headers?: Record<string, string>) => call<T>('POST', url, body ?? {}, headers);
+export const apiPut = <T,>(url: string, body?: unknown) => call<T>('PUT', url, body ?? {});
 export const apiPatch = <T,>(url: string, body?: unknown) => call<T>('PATCH', url, body ?? {});
 export const apiDelete = <T,>(url: string) => call<T>('DELETE', url);
 export const apiUpload = <T,>(url: string, form: FormData) => call<T>('POST', url, form);

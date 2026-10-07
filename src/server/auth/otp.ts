@@ -94,7 +94,7 @@ export async function verifyOtp({ phone, code, ipKey, userAgent }: VerifyOtpInpu
   if (existing && !existing.active) throw new ApiError(403, 'account_disabled', 'This account is disabled. Please call us.');
 
   const user = existing
-    ? await db.user.update({ where: { id: existing.id }, data: { lastLoginAt: now } })
+    ? await db.user.update({ where: { id: existing.id }, data: { lastLoginAt: now, ...(existing.consentAt ? {} : { consentAt: now, consentVersion: CONSENT_VERSION }) } })
     : await db.user.create({ data: { phone, name: (req.name ?? 'Patient').trim() || 'Patient', consentAt: now, consentVersion: CONSENT_VERSION, lastLoginAt: now } });
 
   const { token, expiresAt } = await createSession(user.id, user.role, userAgent);

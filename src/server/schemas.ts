@@ -40,3 +40,15 @@ export const createOrderSchema = z.object({
 });
 
 export const orderCode = z.string().regex(/^AL-[A-Z0-9]{6}$/);
+
+export const collectSchema = z.object({
+  barcode: z.string().trim().max(40).optional().transform((v) => v || undefined),
+  paymentCollected: z.boolean().optional(),
+});
+
+export const resultsSchema = z.object({
+  entries: z.array(z.object({ parameterId: z.string().min(1).max(40), value: z.string().max(2100), abnormal: z.boolean().optional() })).min(1).max(300),
+});
+
+export const reasonSchema = z.object({ reason: z.string().trim().min(5, 'Give a short reason.').max(200) });
+export const assignSchema = z.object({ phlebotomistId: z.string().min(1).max(40).nullable() });

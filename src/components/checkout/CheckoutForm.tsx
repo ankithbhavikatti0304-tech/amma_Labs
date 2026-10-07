@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { cart } from '@/lib/client/cart';
-import { toast } from '@/lib/client/ui';
 import { ApiFailure, apiGet, apiPost } from '@/lib/client/api';
 import { useApp, useCartDetail } from '@/components/providers';
 import { formatPhone, isValidPincode } from '@/lib/phone';
@@ -29,7 +28,7 @@ export function CheckoutForm({ days: initialDays, saved }: { days: SlotDay[]; sa
   const [addr, setAddr] = useState(saved.addresses[0]?.line ?? '');
   const [pin, setPin] = useState(saved.addresses[0]?.pincode ?? '');
   const [dateIx, setDateIx] = useState(0);
-  const [slotId, setSlotId] = useState('');
+  const [rawSlotId, setSlotId] = useState('');
   const [pay, setPay] = useState<'COD' | 'ONLINE'>('COD');
   const [errs, setErrs] = useState<Record<string, string>>({});
   const [formErr, setFormErr] = useState('');
@@ -43,11 +42,9 @@ export function CheckoutForm({ days: initialDays, saved }: { days: SlotDay[]; sa
   const hasCentre = items.some((t) => t.centreVisit);
   const step = (n: number) => (bill.homeCollection ? n : n - 1);
 
-  // If the chosen slot becomes unavailable (fasting rule or full), clear it.
-  const chosen = day?.slots.find((s) => s.id === slotId);
-  useEffect(() => {
-    if (slotId && (!chosen || !chosen.available || (fasting && !chosen.morning))) setSlotId('');
-  }, [slotId, chosen, fasting]);
+  // A chosen slot stops counting if it fills up, or the cart gains a fasting test and it isn't a morning slot.
+  const chosen = day?.slots.find((s) => s.id === rawSlotId);
+  const slotId = chosen && chosen.available && !(fasting && !chosen.morning) ? rawSlotId : '';
 
   const total = useMemo(() => bill.total, [bill.total]);
 

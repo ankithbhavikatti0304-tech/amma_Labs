@@ -5,19 +5,26 @@ const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:n
 
 /** Mount on open, unmount after the close animation. `shown` drives the CSS transition. */
 function usePresence(open: boolean, ms: number) {
-  const [mounted, setMounted] = useState(open);
-  const [shown, setShown] = useState(false);
+  const [prevOpen, setPrevOpen] = useState(open);
+  const [entered, setEntered] = useState(false);
+  const [exiting, setExiting] = useState(false);
+  // React to `open` flipping while rendering (the supported way to derive state from a changing prop).
+  if (prevOpen !== open) {
+    setPrevOpen(open);
+    if (open) setExiting(false);
+    else { setEntered(false); setExiting(true); }
+  }
   useEffect(() => {
-    if (open) {
-      setMounted(true);
-      const raf = requestAnimationFrame(() => setShown(true));
-      return () => cancelAnimationFrame(raf);
-    }
-    setShown(false);
-    const t = setTimeout(() => setMounted(false), ms);
+    if (!open) return;
+    const raf = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(raf);
+  }, [open]);
+  useEffect(() => {
+    if (!exiting) return;
+    const t = setTimeout(() => setExiting(false), ms);
     return () => clearTimeout(t);
-  }, [open, ms]);
-  return { mounted, shown };
+  }, [exiting, ms]);
+  return { mounted: open || exiting, shown: open && entered };
 }
 
 /**
@@ -59,8 +66,13 @@ export function Modal({ open, onClose, label, variant = 'sheet', children }: { o
       if (!nodes.length) return;
       const first = nodes[0]!;
       const last = nodes[nodes.length - 1]!;
-      if (e.shiftKey && document.activeElement === first) (e.preventDefault(), last.focus());
-      else if (!e.shiftKey && document.activeElement === last) (e.preventDefault(), first.focus());
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   };
 

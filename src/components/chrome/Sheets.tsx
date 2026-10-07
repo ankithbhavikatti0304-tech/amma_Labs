@@ -18,9 +18,10 @@ import { isValidPhone, normalizePhone } from '@/lib/phone';
 /** Hosts whichever sheet is open. Keeps the last one mounted during the close animation. */
 export function SheetHost() {
   const sheet = useSheet();
-  const last = useRef<SheetState>(null);
-  if (sheet) last.current = sheet;
-  const s = sheet ?? last.current;
+  // Keep showing the last sheet while the close animation plays.
+  const [last, setLast] = useState<SheetState>(null);
+  if (sheet && sheet !== last) setLast(sheet);
+  const s = sheet ?? last;
   const label = s?.kind === 'login' ? 'Log in' : s?.kind === 'call' ? 'Book by phone' : s?.kind === 'upload' ? 'Upload prescription' : 'Test details';
   return (
     <Modal open={!!sheet} onClose={closeSheet} label={label}>

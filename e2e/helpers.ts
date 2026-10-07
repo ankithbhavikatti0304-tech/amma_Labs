@@ -22,3 +22,28 @@ export async function login(page: Page, phone: string, name = 'Lakshmi Rao') {
   expect(code).toMatch(/^\d{6}$/);
   for (let i = 0; i < 6; i++) await page.getByLabel(`Digit ${i + 1}`).fill(code[i]!);
 }
+
+import pg from 'pg';
+import type { Browser } from '@playwright/test';
+
+export const db = () => new pg.Client({ connectionString: process.env.E2E_DATABASE_URL ?? 'postgresql://postgres:amma_dev_pw@127.0.0.1:5433/amma_e2e' });
+
+/** Create or update a staff account directly (staff are added by an admin, never by self sign-up). */
+export async function upsertStaff(phone: string, name: string, role: string) {
+  const c = db();
+  await c.connect();
+  await c.query(`INSERT INTO "User"(id, phone, name, role, "updatedAt") VALUES (gen_random_uuid()::text, $1, $2, $3::"Role", now()) ON CONFLICT (phone) DO UPDATE SET role = $3::"Role", name = $2, active = true`, [phone, name, role]);
+  await c.end();
+}
+
+/** A fresh browser session logged in as someone (a new person is created if the number is new). */
+export async function sessionFor(browser: Browser, phone: string, name = 'Test Person') {
+  const ctx = await browser.newContext({ reducedMotion: 'reduce' });
+  const page = await ctx.newPage();
+  await page.goto('/login');
+  await login(page, phone, name);
+  await page.waitForURL((u) => !u.pathname.startsWith('/login'));
+  return { ctx, page };
+}
+
+export const tomorrowIst = () => new Date(Date.now() + 330 * 60_000 + 86_400_000).toISOString().slice(0, 10);

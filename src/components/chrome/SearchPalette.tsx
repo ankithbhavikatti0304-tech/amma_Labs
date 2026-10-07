@@ -34,7 +34,12 @@ export function SearchPalette() {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  useEffect(() => { if (open) { setQ(''); setSel(-1); } }, [open]);
+  // Start empty each time it opens.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (wasOpen !== open) {
+    setWasOpen(open);
+    if (open) { setQ(''); setSel(-1); }
+  }
 
   const all = useMemo(() => findTests(tests, categories, q), [tests, categories, q]);
   const popular = useMemo(() => tests.filter((t) => t.popular).slice(0, 5), [tests]);

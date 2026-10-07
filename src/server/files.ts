@@ -22,7 +22,6 @@ export function sniff(b: Buffer): Sniffed | null {
 /** A display-safe version of an uploaded file name: no path, no control characters, bounded length. */
 export function cleanFileName(name: string): string {
   const base = name.split(/[\\/]/).pop() ?? 'file';
-  // eslint-disable-next-line no-control-regex
   const s = base.replace(/[\u0000-\u001f\u007f<>:"|?*]/g, '').trim().slice(0, 100);
   return s || 'file';
 }
