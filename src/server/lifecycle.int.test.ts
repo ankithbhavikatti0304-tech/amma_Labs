@@ -204,3 +204,31 @@ describe('privacy of reports', () => {
     expect(log.meta).toEqual({ count: 3 });
   });
 });
+
+describe('who may read results and released reports besides the owner', () => {
+  it('pathologists, technicians and admins can; phlebotomists and other patients cannot', async () => {
+    const o = await bookCbc();
+    await collectSample(phleb, o.code);
+    await fill(o.code, tech, { 'T3, total': '112', 'T4, total': '8.6', TSH: '2.1' });
+    await releaseReport(path, o.code);
+    for (const who of [path, tech, admin]) {
+      await expect(getReport(who, o.code)).resolves.toBeTruthy();
+      expect((await getReportPdf(who, o.code)).subarray(0, 5).toString()).toBe('%PDF-');
+    }
+    // a phlebotomist collects samples; reading patients' results is not part of that job
+    await expect(getReport(phleb, o.code)).rejects.toMatchObject({ status: 404, code: 'not_found' });
+    await expect(getReportPdf(phleb, o.code)).rejects.toMatchObject({ status: 404, code: 'not_found' });
+    await expect(getReport(other, o.code)).rejects.toMatchObject({ status: 404 });
+  });
+
+  it('a phlebotomist who is also a patient can still read their own report', async () => {
+    const o = await createOrder(phleb, {
+      items: ['thyt'], coupon: null, hardCopy: false, patient: { name: 'Ravi', age: 40, gender: 'MALE' }, address: { line: '12, 4th Cross, Indiranagar', pincode: '560038' }, city: 'Bengaluru',
+      slot: { date: bookableDates(5)[1]!, slotId: 's1000' }, payMode: 'COD', expectedTotal: 539, idempotencyKey: crypto.randomUUID(),
+    });
+    await collectSample(admin, o.code);
+    await fill(o.code, tech, { 'T3, total': '112', 'T4, total': '8.6', TSH: '2.1' });
+    await releaseReport(path, o.code);
+    await expect(getReport(phleb, o.code)).resolves.toBeTruthy();
+  });
+});

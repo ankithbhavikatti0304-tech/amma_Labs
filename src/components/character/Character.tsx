@@ -23,15 +23,20 @@ export interface CharacterProps {
 
 const cache = new Map<string, string>();
 
-function markup(mascot: string, arg: string | null | undefined): string {
+// The mascot name and its option are set by an admin and stored in the database, then interpolated into SVG markup.
+// So: only known mascot names, and an option that is a plain colour or word. Anything else is ignored.
+const SAFE_ARG = /^[#A-Za-z0-9]{1,30}$/;
+
+function markup(mascot: string, rawArg: string | null | undefined): string {
+  const arg = rawArg && SAFE_ARG.test(rawArg) ? rawArg : undefined;
   const k = `${mascot}|${arg ?? ''}`;
   let s = cache.get(k);
   if (s === undefined) {
     if (mascot === 'person') {
-      const p = PPL[arg ?? ''];
+      const p = arg && Object.hasOwn(PPL, arg) ? PPL[arg] : undefined;
       s = p ? person(p) : M.drop!();
     } else {
-      s = (M[mascot] ?? M.drop!)(arg ?? undefined);
+      s = (Object.hasOwn(M, mascot) ? M[mascot]! : M.drop!)(arg);
     }
     cache.set(k, s);
   }

@@ -1,7 +1,7 @@
 /**
  * Mascot and people builders, ported from the approved prototype (person(), M, PPL).
- * They return SVG markup strings built only from constants in this file, never from user
- * input, so rendering them with dangerouslySetInnerHTML is safe. Animations are CSS-only
+ * They return SVG markup strings. The only variable parts are a mascot option such as a colour; Character.tsx
+ * allowlists the mascot name and that option before calling in here, so nothing else can reach the markup. Animations are CSS-only
  * (see styles/app.css) and switch off under prefers-reduced-motion.
  */
 const INK='#1d2630';

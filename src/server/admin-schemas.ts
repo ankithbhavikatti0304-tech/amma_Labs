@@ -1,6 +1,7 @@
 import 'server-only';
 import { z } from 'zod';
 import { phoneSchema, personName } from './schemas';
+import { M } from '@/components/character/builders';
 
 // A blank required number must be an error, not a silent 0 (z.coerce.number() turns '' into 0).
 const blankToUndefined = (v: unknown) => (v === '' ? undefined : v);
@@ -28,8 +29,8 @@ export const testSchema = z
     active: z.boolean(),
     includes: lines(200),
     categories: z.array(z.string().max(30)).min(1, 'Pick at least one category.').max(12),
-    mascot: text(1, 30),
-    mascotArg: nullableText(30),
+    mascot: z.string().refine((m) => m !== 'family' && Object.hasOwn(M, m), 'Choose a character from the list.'),
+    mascotArg: z.preprocess((v) => (typeof v === 'string' && v.trim() === '' ? null : v), z.string().trim().regex(/^[#A-Za-z0-9]{1,30}$/, 'Letters, numbers or a # colour only.').nullable()),
     tint: z.enum(['a', 'b', 'c']),
   })
   .refine((t) => t.tatMinHours <= t.tatMaxHours, { message: 'Fastest report time cannot be longer than the slowest.', path: ['tatMinHours'] })

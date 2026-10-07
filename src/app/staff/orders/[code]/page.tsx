@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requirePageUser } from '@/server/auth/cookie';
 import { db } from '@/server/db';
-import { getEntryForm } from '@/server/results';
+import { canReadResults, getEntryForm } from '@/server/results';
 import { ApiError } from '@/server/http-errors';
 import { orderCode } from '@/server/schemas';
 import { ResultsForm } from '@/components/staff/ResultsForm';
@@ -27,7 +27,8 @@ export default async function StaffOrder({ params }: { params: Promise<{ code: s
   const canCollect = admin || role === 'PHLEBOTOMIST';
 
   let form: Awaited<ReturnType<typeof getEntryForm>> | null = null;
-  if (['SAMPLE_COLLECTED', 'PROCESSING', 'REPORT_READY'].includes(order.status)) {
+  // Result values are shown only to the roles that enter, verify or administer them (not to phlebotomists).
+  if (canReadResults(user) && ['SAMPLE_COLLECTED', 'PROCESSING', 'REPORT_READY'].includes(order.status)) {
     try { form = await getEntryForm(order.code); } catch (e) { if (!(e instanceof ApiError)) throw e; }
   }
   const missing = form ? form.rows.filter((r) => r.value === '').length : 0;

@@ -219,10 +219,17 @@ async function composeReport(order: OrderRow, tests: ReportTestInput[], results:
   return buildReport({ order, collected, releasedAt, verifiedBy, tests, results: map });
 }
 
+/**
+ * Staff who may see result values and released reports for orders that aren't their own: the people who
+ * enter, verify and administer results. A phlebotomist collects samples and has no need to read results.
+ */
+export const RESULT_READERS: readonly SessionUser['role'][] = ['ADMIN', 'PATHOLOGIST', 'TECHNICIAN'];
+export const canReadResults = (user: SessionUser): boolean => RESULT_READERS.includes(user.role);
+
 async function loadReportFor(user: SessionUser, code: string) {
   const order = await db.order.findUnique({ where: { code }, include: { report: true } });
   // Someone else's order and a missing one look the same.
-  if (!order || (order.userId !== user.id && user.role === 'PATIENT')) throw new ApiError(404, 'not_found', 'We could not find that report.');
+  if (!order || (order.userId !== user.id && !canReadResults(user))) throw new ApiError(404, 'not_found', 'We could not find that report.');
   if (order.status !== 'REPORT_READY' || !order.report) throw new ApiError(404, 'not_ready', 'This report is not ready yet.');
   return { order, report: order.report };
 }

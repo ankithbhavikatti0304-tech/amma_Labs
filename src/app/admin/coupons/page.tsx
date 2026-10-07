@@ -8,6 +8,7 @@ export default async function AdminCoupons() {
   const coupons = await db.coupon.findMany({ orderBy: { createdAt: 'asc' } });
   return (
     <div className="stack" style={{ gap: 18 }}>
+      <div className="note info">Every active coupon is listed to all visitors on the cart page. There are no private codes, so don&apos;t create one meant for a single person.</div>
       {coupons.map((c) => (
         <details key={c.code} className="panel">
           <summary style={{ cursor: 'pointer', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
