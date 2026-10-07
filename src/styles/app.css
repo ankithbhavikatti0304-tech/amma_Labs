@@ -30,7 +30,7 @@ svg{display:block}
 .brand b{display:block;font-size:17px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
 .brand small{white-space:nowrap;display:block;font-size:11.5px;color:var(--muted);line-height:1.2;font-weight:600}
 .links{display:flex;gap:2px;margin-left:8px}
-.links a{white-space:nowrap;padding:9px 14px;border-radius:999px;font-weight:700;font-size:14px;color:var(--ink-2);transition:background .2s,color .2s}
+.links a{white-space:nowrap;padding:9px 11px;border-radius:999px;font-weight:700;font-size:14px;color:var(--ink-2);transition:background .2s,color .2s}
 .links a:hover,.links a[aria-current="true"]{background:var(--accent-soft);color:var(--accent-deep)}
 .grow{flex:1}
 .npill{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:14px;white-space:nowrap;transition:border-color .2s,transform .2s var(--spring)}
@@ -38,8 +38,9 @@ svg{display:block}
 .npill:active{transform:scale(.96)}
 .npill select{border:0;background:transparent;font-weight:700;outline:none;cursor:pointer}
 .npill kbd{font:500 11px var(--f-mono);border:1px solid var(--line-2);border-radius:6px;padding:1px 6px;color:var(--muted)}
-.npill.srch{min-width:220px;color:var(--muted);font-weight:600}
-.npill.srch span{flex:1;text-align:left}
+/* The search pill gives up width when the row is tight (the nav's other items need ~1170px at desktop, the pill's own max). */
+.npill.srch{flex:0 1 220px;min-width:120px;color:var(--muted);font-weight:600}
+.npill.srch span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:left}
 .npill.dark{background:var(--dock);color:var(--dock-ink);border-color:var(--dock)}
 .count{min-width:22px;height:22px;border-radius:11px;background:var(--sky);color:#fff;font-size:12px;font-weight:800;display:inline-grid;place-items:center;padding:0 6px;font-variant-numeric:tabular-nums}
 .bump{animation:bump .35s var(--spring)}

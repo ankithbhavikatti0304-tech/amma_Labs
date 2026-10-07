@@ -79,6 +79,22 @@ test('a wrong OTP is rejected without logging in', async ({ page }) => {
   await expect(page).toHaveURL(/\/login/);
 });
 
+test('nothing scrolls sideways at any common width, and the nav fits inside its bar', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'resizes the window, which is meaningless on the phone profile');
+  for (const width of [360, 390, 768, 1024, 1221, 1280, 1366, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 800 });
+    for (const path of ['/', '/tests']) {
+      await page.goto(path);
+      const m = await page.evaluate(() => {
+        const nav = document.querySelector('.nav-in')!;
+        return { page: document.documentElement.scrollWidth - window.innerWidth, nav: nav.scrollWidth - nav.clientWidth };
+      });
+      expect(m.page, `${path} at ${width}px overflows the page by ${m.page}px`).toBeLessThanOrEqual(0);
+      expect(m.nav, `the nav bar at ${width}px is ${m.nav}px too narrow for its contents`).toBeLessThanOrEqual(0);
+    }
+  }
+});
+
 test('@mobile nothing scrolls sideways at phone width', async ({ page }) => {
   for (const path of ['/', '/tests', '/category/thyroid', '/cart', '/privacy']) {
     await page.goto(path);
