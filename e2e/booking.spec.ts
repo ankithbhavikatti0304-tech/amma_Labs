@@ -8,7 +8,7 @@ test('a patient finds a test, books it, and tracks the order', async ({ page }) 
 
   // Search as you type: opens with "/", results appear without leaving the page.
   await page.keyboard.press('/');
-  await page.getByRole('combobox', { name: 'Search tests' }).fill('thyroid');
+  await page.getByRole('searchbox', { name: 'Search tests' }).fill('thyroid');
   const first = page.locator('.pal-row').first();
   await expect(first).toContainText(/thyroid/i);
   await first.getByRole('button', { name: /^Add/ }).click();

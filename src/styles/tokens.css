@@ -5,7 +5,8 @@
   --line:rgba(15,34,54,.09); --line-2:rgba(15,34,54,.18);
   --accent:#3368A0; --accent-ink:#FFFFFF; --accent-soft:#E3EDF6; --accent-deep:#21507F; --sky:#66A3BF; --mint:#C8DFDB;
   --dock:#0F2236; --dock-ink:#FFFFFF; --dock-2:rgba(255,255,255,.12);
-  --ok:#2C7A6A; --ok-soft:#DCEEE9; --hi:#B83A30; --hi-soft:#F9E3DF; --lo:#94600E; --lo-soft:#F6EAD1;
+  /* --ok and --lo are a shade darker than the prototype's #2C7A6A / #94600E so text on --ok-soft / --lo-soft reaches WCAG AA (4.5:1). */
+  --ok:#256B5D; --ok-soft:#DCEEE9; --hi:#B83A30; --hi-soft:#F9E3DF; --lo:#865509; --lo-soft:#F6EAD1;
   --tint-a:#C8DFDB; --tint-b:#D4E5EF; --tint-c:#EAE3D3;
   --grad:linear-gradient(140deg,#3368A0 0%,#4F8DB7 55%,#66A3BF 100%);
   --aura-1:rgba(102,163,191,.30); --aura-2:rgba(200,223,219,.85);

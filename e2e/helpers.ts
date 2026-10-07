@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page } from '@playwright/test';
 
 /** Fail the test on any console error or CSP violation. */
@@ -58,3 +59,13 @@ export async function sessionFor(browser: Browser, phone: string, name = 'Test P
 }
 
 export const tomorrowIst = () => new Date(Date.now() + 330 * 60_000 + 86_400_000).toISOString().slice(0, 10);
+
+/** Fail on any WCAG 2.1 A/AA violation axe can detect on the current page. */
+export async function expectAccessible(page: Page, label: string) {
+  // Scan a settled page, not one in the middle of a refresh.
+  await page.waitForLoadState('networkidle');
+  await expect(page).toHaveTitle(/.+/);
+  const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  const bad = r.violations.map((v) => `${v.id} (${v.impact}): ${v.help}\n   ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join('\n   ')}`);
+  expect(bad, `${label}\n${bad.join('\n')}`).toEqual([]);
+}

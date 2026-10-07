@@ -31,8 +31,8 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         {stat('New prescriptions', newRx, '/admin/inbox')}
       </div>
       <div className="bar">
-        <Link className="chip" href="/admin" aria-pressed={!status}>All</Link>
-        {STATUSES.map((s) => <Link key={s} className="chip" href={`/admin?status=${s}`} aria-pressed={status === s}>{label(s)} · {n(s)}</Link>)}
+        <Link className="chip" href="/admin" aria-current={!status ? 'true' : undefined}>All</Link>
+        {STATUSES.map((s) => <Link key={s} className="chip" href={`/admin?status=${s}`} aria-current={status === s ? 'true' : undefined}>{label(s)} · {n(s)}</Link>)}
       </div>
       <div className="panel"><div className="tbl" style={{ marginTop: 0 }}>
         <table>

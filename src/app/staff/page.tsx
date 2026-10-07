@@ -43,7 +43,7 @@ export default async function StaffHome({ searchParams }: { searchParams: SP }) 
         <section>
           <div className="sec-head" style={{ marginBottom: 12 }}>
             <h2>Pickups · {longDate(date)}</h2>
-            <div className="bar">{[0, 1, 2].map((n) => { const d = addDays(today, n); return <Link key={d} className="chip" href={`/staff?date=${d}`} aria-pressed={d === date}>{n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : longDate(d)}</Link>; })}</div>
+            <div className="bar">{[0, 1, 2].map((n) => { const d = addDays(today, n); return <Link key={d} className="chip" href={`/staff?date=${d}`} aria-current={d === date ? 'true' : undefined}>{n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : longDate(d)}</Link>; })}</div>
           </div>
           {pickups.length ? <div className="olist">{pickups.map((p) => <PickupCard key={p.code} p={p} />)}</div> : <div className="empty" style={{ padding: 24 }}>No pickups for this day.</div>}
         </section>

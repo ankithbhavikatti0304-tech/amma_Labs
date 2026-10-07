@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { newPhone, sessionFor, tomorrowIst, upsertStaff } from './helpers';
+import { expectAccessible, newPhone, sessionFor, tomorrowIst, upsertStaff } from './helpers';
 
 const PHLEB = '9000000011', TECH = '9000000012', PATH = '9000000013';
 
@@ -46,6 +46,7 @@ test('an order goes from booking to a flagged report, each person seeing only th
   await tech.getByLabel('TSH').fill('5.5');
   await tech.getByRole('button', { name: 'Save results' }).click();
   await expect(tech.getByRole('row', { name: /^TSH/ }).getByText('High')).toBeVisible();
+  await expectAccessible(tech, 'results entry');
   // Technicians cannot release
   await expect(tech.getByRole('button', { name: 'Verify and release report' })).toHaveCount(0);
 
@@ -63,6 +64,7 @@ test('an order goes from booking to a flagged report, each person seeing only th
   await expect(tshRow).toBeVisible();
   await expect(tshRow.locator('.flag')).toHaveText('High');
   await expect(patient.getByText('Dr Priya Pathologist')).toBeVisible();
+  await expectAccessible(patient, 'report');
   const pdf = await patient.request.get(`/api/orders/${code}/report`);
   expect(pdf.status()).toBe(200);
   expect(pdf.headers()['content-type']).toBe('application/pdf');

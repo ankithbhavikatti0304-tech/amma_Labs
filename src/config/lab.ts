@@ -60,4 +60,6 @@ export const OTP = {
   ttlSeconds: 5 * 60,
   resendSeconds: 30,
   maxAttempts: 5,
+  /** Whole-site ceiling per hour, so a flood of fake numbers cannot run up the SMS bill. */
+  globalPerHour: 1500,
 } as const;

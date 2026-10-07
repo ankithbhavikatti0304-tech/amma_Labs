@@ -64,7 +64,7 @@ export function SearchPalette() {
       <div className="pal-in">
         <Icon name="search" size={22} />
         <label htmlFor="q" className="sr">Search tests</label>
-        <input ref={input} id="q" type="search" placeholder="Search tests, packages or categories" autoComplete="off" value={q} onChange={(e) => { setQ(e.target.value); setSel(-1); }} onKeyDown={onKeyDown} role="combobox" aria-expanded="true" aria-controls="palList" aria-activedescendant={sel > -1 ? `pal-${sel}` : undefined} />
+        <input ref={input} id="q" type="search" placeholder="Search tests, packages or categories" autoComplete="off" value={q} onChange={(e) => { setQ(e.target.value); setSel(-1); }} onKeyDown={onKeyDown} aria-controls="palList" />
         <kbd>Esc</kbd>
       </div>
       <div className="pal-body" id="palList">
@@ -76,7 +76,7 @@ export function SearchPalette() {
           </>
         ) : all.length ? <div className="pal-label">{all.length} result{all.length === 1 ? '' : 's'}</div> : null}
         {rows.map((t, i) => (
-          <div key={t.id} id={`pal-${i}`} className={`pal-row${i === sel ? ' sel' : ''}`} role="option" aria-selected={i === sel}>
+          <div key={t.id} className={`pal-row${i === sel ? ' sel' : ''}`}>
             <TestArt t={t} size="xs" />
             <button type="button" className="nm" onClick={() => openDetail(t)}>{t.name}<span>{inr(t.price)} · report in {tatRange(t)} hrs</span></button>
             <AddButton id={t.id} name={t.name} />

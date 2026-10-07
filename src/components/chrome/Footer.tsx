@@ -27,6 +27,7 @@ export function Footer({ settings }: { settings: PublicSettings }) {
             <li><Link href="/tests">All tests</Link></li>
             <li><Link href="/orders">My orders &amp; reports</Link></li>
             <li><Link href="/privacy">Privacy notice</Link></li>
+            <li><Link href="/account">My details &amp; data</Link></li>
           </ul>
         </div>
         <div>

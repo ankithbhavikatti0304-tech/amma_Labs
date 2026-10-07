@@ -30,6 +30,8 @@ export async function sendOtp({ phone, name, consent, ipKey }: SendOtpInput): Pr
   if (!gap.ok) throw new ApiError(429, 'rate_limited', `Please wait ${gap.retryAfter} seconds before asking for another code.`, { retryAfter: gap.retryAfter });
   const perPhone = await hit('otp-phone', phone, 5, 3600);
   if (!perPhone.ok) throw new ApiError(429, 'rate_limited', 'Too many codes requested for this number. Try again in an hour.', { retryAfter: perPhone.retryAfter });
+  const global = await hit('otp-global', 'all', OTP.globalPerHour, 3600);
+  if (!global.ok) throw new ApiError(503, 'busy', 'We are getting a lot of requests right now. Please try again in a few minutes, or call us to book.', { retryAfter: global.retryAfter });
   const perIp = await hit('otp-ip', ipKey, 20, 3600);
   if (!perIp.ok) throw new ApiError(429, 'rate_limited', 'Too many requests from this network. Try again later.', { retryAfter: perIp.retryAfter });
 

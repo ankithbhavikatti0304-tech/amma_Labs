@@ -238,3 +238,12 @@ describe('auth routes', () => {
 });
 
 vi.setConfig({ testTimeout: 20000 });
+
+describe('site-wide OTP ceiling', () => {
+  it('refuses new codes once the hourly site-wide cap is hit, even for fresh numbers', async () => {
+    await resetDb();
+    await db.rateLimit.create({ data: { key: 'otp-global:' + (await import('../crypto')).hmac('rl', 'all').slice(0, 32), count: 1500, windowStart: new Date() } });
+    await expect(sendOtp({ ...base, phone: '9123456780' })).rejects.toMatchObject({ status: 503, code: 'busy' });
+    expect(await db.otpRequest.count()).toBe(0);
+  });
+});

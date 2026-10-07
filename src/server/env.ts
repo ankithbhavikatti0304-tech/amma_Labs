@@ -65,6 +65,8 @@ const schema = z
       need(e.STORAGE_DRIVER !== 'local', 'STORAGE_DRIVER', 'local disk storage is lost between deployments; use s3 in production');
       need(e.APP_URL.startsWith('https://'), 'APP_URL', 'must be https in production');
       need(e.CRON_SECRET !== undefined, 'CRON_SECRET', 'required in production for scheduled jobs');
+      // Unset would silently put every visitor in one rate-limit bucket (behind a proxy) or trust spoofable headers (without one).
+      need(process.env.TRUST_PROXY !== undefined, 'TRUST_PROXY', 'set it to true behind Vercel or a load balancer you control, false otherwise');
     }
     if (e.SMS_PROVIDER === 'msg91') {
       need(!!e.MSG91_AUTH_KEY, 'MSG91_AUTH_KEY', 'required when SMS_PROVIDER=msg91');

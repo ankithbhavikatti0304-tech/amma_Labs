@@ -18,7 +18,7 @@ export default async function OrdersPage() {
       <nav className="crumbs" aria-label="Breadcrumb"><Link href="/">Home</Link><span>›</span><span>My orders &amp; reports</span></nav>
       <div className="lhead">
         <div><h1>My orders &amp; reports</h1></div>
-        {user ? <div className="bar"><span className="muted">{user.name} · +91 {formatPhone(user.phone)}</span><LogoutButton /></div> : null}
+        {user ? <div className="bar"><span className="muted">{user.name} · +91 {formatPhone(user.phone)}</span><Link className="chip" href="/account">My details</Link><LogoutButton /></div> : null}
       </div>
       {!user ? <LoginPrompt next="/orders" /> : orders.length ? (
         <div className="olist">

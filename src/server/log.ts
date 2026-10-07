@@ -8,7 +8,11 @@ const REDACT = /^(otp|code|codehash|token|tokenhash|secret|password|authorizatio
 function scrub(v: unknown, depth = 0): unknown {
   if (v === null || typeof v !== 'object') return v;
   if (depth > 4) return '[deep]';
-  if (v instanceof Error) return { name: v.name, message: v.message };
+  if (v instanceof Error) {
+    // Prisma errors can echo the data that was submitted, after the first line. Keep only the first line.
+    const code = (v as { code?: unknown }).code;
+    return { name: v.name, ...(typeof code === 'string' ? { code } : {}), message: v.message.split('\n')[0]!.slice(0, 200) };
+  }
   if (Array.isArray(v)) return v.slice(0, 20).map((x) => scrub(x, depth + 1));
   return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, REDACT.test(k) ? '[redacted]' : scrub(x, depth + 1)]));
 }

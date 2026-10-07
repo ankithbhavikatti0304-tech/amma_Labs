@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { newPhone, sessionFor, watchConsole } from './helpers';
+import { expectAccessible, newPhone, sessionFor, watchConsole } from './helpers';
 
 const ADMIN = '9000000000'; // created by the e2e seed
 
@@ -72,7 +72,12 @@ test('an admin price change shows on the storefront straight away', async ({ bro
 
 test('an admin can add a staff member and a coupon, and a patient cannot reach admin pages', async ({ browser }) => {
   const admin = await sessionFor(browser, ADMIN, 'Admin Person');
+  for (const p of ['/admin', '/admin/tests', '/admin/tests/cbc', '/admin/ranges', '/admin/coupons', '/admin/slots', '/admin/inbox', '/admin/settings']) {
+    await admin.page.goto(p);
+    await expectAccessible(admin.page, p);
+  }
   await admin.page.goto('/admin/staff');
+  await expectAccessible(admin.page, '/admin/staff');
   await admin.page.getByLabel('Full name').fill('New Phlebotomist');
   await admin.page.getByLabel('Mobile number').fill('9000000099');
   await admin.page.getByRole('button', { name: 'Add / update' }).click();

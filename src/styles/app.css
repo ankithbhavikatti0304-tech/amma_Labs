@@ -63,7 +63,7 @@ svg{display:block}
 @keyframes live{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent)}100%{box-shadow:0 0 0 9px transparent}}
 .chip{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13.5px;font-weight:700;transition:all .2s var(--ease);white-space:nowrap}
 .chip:hover{border-color:var(--line-2)}
-.chip[aria-pressed="true"]{background:var(--dock);color:var(--dock-ink);border-color:var(--dock)}
+.chip[aria-pressed="true"],.chip[aria-current="true"]{background:var(--dock);color:var(--dock-ink);border-color:var(--dock)}
 label.chip select{border:0;background:transparent;font-weight:700;outline:none;cursor:pointer}
 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .field{display:grid;gap:6px}
@@ -139,14 +139,15 @@ label.chip select{border:0;background:transparent;font-weight:700;outline:none;c
 .pbar i{position:absolute;top:-1px;width:4px;height:7px;border-radius:2px;background:#3368A0;left:var(--x);animation:pmark 1.4s var(--spring) both}
 .pbar i.lo{background:#C78A1E}
 @keyframes pmark{from{left:2%}}
-.pflag{font-size:8.5px;font-weight:800;padding:2px 6px;border-radius:5px;background:#DCEEE9;color:#2C7A6A;letter-spacing:.04em}
-.pflag.l{background:#F6EAD1;color:#94600E}
+.pflag{font-size:8.5px;font-weight:800;padding:2px 6px;border-radius:5px;background:#DCEEE9;color:#256B5D;letter-spacing:.04em}
+.pflag.l{background:#F6EAD1;color:#865509}
 .pbtn{height:28px;border-radius:999px;background:#0F2236;color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center}
 .b-mini{background:var(--surface);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:6px;min-height:200px;box-shadow:var(--shadow-sm)}
 .b-mini b,.b-mini span{display:block}
 .b-mini b{font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
 .b-mini span{color:var(--muted);font-size:13.5px;font-weight:500;line-height:1.4}
 .b-pick{background:var(--tint-a);border-color:transparent}
+.b-pick span{color:var(--ink-2);opacity:.85}
 .b-pick .art{position:absolute;right:-6px;bottom:-10px;background:transparent}
 .b-pick > div{max-width:62%;position:relative;z-index:1}
 .big-n{font-size:46px!important;font-weight:800;letter-spacing:-.05em;line-height:1!important;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -168,7 +169,7 @@ label.chip select{border:0;background:transparent;font-weight:700;outline:none;c
 .cat.t-b{background:var(--tint-b)} .cat.t-c{background:var(--tint-c)}
 .cat:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
 .cat b{font-size:16px;font-weight:800;letter-spacing:-.02em;line-height:1.2;position:relative;z-index:1}
-.cat small{display:block;color:var(--ink-2);opacity:.75;font-weight:700;font-size:12.5px;margin-top:2px}
+.cat small{display:block;color:var(--ink-2);opacity:.8;font-weight:700;font-size:12.5px;margin-top:2px}
 .cat .art{position:absolute;right:-4px;bottom:-4px;background:transparent!important}
 .cat .arr{position:absolute;left:16px;bottom:16px;width:30px;height:30px;border-radius:50%;background:var(--surface);display:grid;place-items:center;transition:transform .3s var(--spring)}
 .cat:hover .arr{transform:rotate(-45deg)}
@@ -259,6 +260,7 @@ button.pill:hover{border-color:var(--line-2)}
 .sum .tot{border-top:1px dashed var(--line-2);padding-top:12px;margin-top:4px;font-weight:800;font-size:20px;letter-spacing:-.02em}
 .check{display:flex;gap:12px;align-items:flex-start;cursor:pointer;padding:12px;border-radius:var(--r-sm);border:1px solid var(--line);transition:border-color .2s,background .2s}
 .check:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.check:has(input:checked) .muted{color:var(--ink-2)}
 .check input{width:20px;height:20px;accent-color:var(--accent);margin-top:2px;flex:none}
 .coupons{display:grid;gap:8px}
 .coupon{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 14px;border:1.5px dashed var(--line-2);border-radius:var(--r-sm)}
@@ -480,6 +482,8 @@ td.v{font-weight:800}
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{transition:none!important;animation:none!important} html{scroll-behavior:auto} }
 
 /* Links that stand in for the prototype's buttons: same look, no link colour or underline. */
+/* Links inside running text are underlined so they don't rely on colour alone. */
+.check a,p a:not([class]),.note a{text-decoration:underline;text-underline-offset:2px}
 a.chip,a.cat,a.npill,.links a,.catrow a,.brand,.foot ul a,.cbody h3 a{color:inherit;text-decoration:none}
 .links a{color:var(--ink-2)}
 .crumbs a{text-decoration:none}
