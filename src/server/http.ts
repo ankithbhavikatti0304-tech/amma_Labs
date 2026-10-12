@@ -34,6 +34,10 @@ export function assertSameOrigin(req: Request): void {
     const host = req.headers.get('host');
     if (host) allowed.add(`http://${host}`);
   }
+  // Preview deployments get a new address per build; Vercel tells us this one (not the request, so not spoofable).
+  if (e.VERCEL_ENV === 'preview') {
+    for (const host of [e.VERCEL_URL, e.VERCEL_BRANCH_URL]) if (host) allowed.add(`https://${host}`);
+  }
   const origin = req.headers.get('origin');
   if (origin) {
     if (!allowed.has(origin)) throw new ApiError(403, 'bad_origin', 'Request blocked.');

@@ -42,7 +42,6 @@ const schema = z
     MSG91_TEMPLATE_SAMPLE_COLLECTED: z.string().optional(),
     MSG91_TEMPLATE_REPORT_READY: z.string().optional(),
 
-    /** none: online payment is switched off and patients pay at collection. Allowed in production. */
     /** Login codes by email. dev: shown on screen (never allowed in production). */
     EMAIL_PROVIDER: z.enum(['dev', 'resend', 'brevo']).default('dev'),
     /** e.g. `Amma Labs <login@yourdomain.in>`. The address must be one the provider has verified for you. */
@@ -50,6 +49,7 @@ const schema = z
     RESEND_API_KEY: z.string().optional(),
     BREVO_API_KEY: z.string().optional(),
 
+    /** none: online payment is switched off and patients pay at collection. Allowed in production. */
     PAYMENT_PROVIDER: z.enum(['mock', 'razorpay', 'none']).default('mock'),
     RAZORPAY_KEY_ID: z.string().optional(),
     RAZORPAY_KEY_SECRET: z.string().optional(),
@@ -69,6 +69,14 @@ const schema = z
     WHATSAPP_PROVIDER: z.enum(['off', 'cloud']).default('off'),
     WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
     WHATSAPP_TOKEN: z.string().optional(),
+
+    /**
+     * Set by Vercel itself, never by hand. On a preview deployment the deployment's own addresses count as
+     * this site's origin (every preview has a fresh address, so APP_URL cannot name it). Production ignores them.
+     */
+    VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
+    VERCEL_URL: z.string().regex(/^[a-z0-9.-]+$/i).optional(),
+    VERCEL_BRANCH_URL: z.string().regex(/^[a-z0-9.-]+$/i).optional(),
 
     /** Shared secret for the scheduled jobs under /api/cron. */
     CRON_SECRET: z.string().min(24).optional(),
