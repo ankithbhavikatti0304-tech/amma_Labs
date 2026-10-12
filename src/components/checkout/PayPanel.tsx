@@ -26,12 +26,19 @@ const mmss = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms 
 /** Pay for an online order. The amount shown is the order total; the gateway order is created on the server. */
 export function PayPanel({ code, total, expiresAt, phone }: { code: string; total: number; expiresAt: string; phone: string }) {
   const router = useRouter();
-  const [now, setNow] = useState(() => Date.now());
+  // The clock starts after mount. Reading the time during the first render gives the server and the browser
+  // different seconds, so the countdown text would not match and React would report a hydration error.
+  const [now, setNow] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [test, setTest] = useState<PaymentInit | null>(null);
-  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
-  const left = new Date(expiresAt).getTime() - now;
+  useEffect(() => {
+    const tick = () => setNow(Date.now());
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, []);
+  const left = now === null ? null : new Date(expiresAt).getTime() - now;
 
   async function verify(r: { providerOrderId: string; paymentId: string; signature: string }) {
     try {
@@ -63,12 +70,12 @@ export function PayPanel({ code, total, expiresAt, phone }: { code: string; tota
     }
   }
 
-  if (left <= 0) {
+  if (left !== null && left <= 0) {
     return <div className="stack" style={{ gap: 12 }}><div className="note">Your slot hold has run out. Nothing was charged.</div><Link className="btn" href="/cart">Book again</Link></div>;
   }
   return (
     <div className="stack" style={{ gap: 14 }}>
-      <p className="muted" style={{ margin: 0 }}>Your slot is held for <b className="mono">{mmss(left)}</b>. If it runs out, nothing is charged and you can book again.</p>
+      <p className="muted" style={{ margin: 0 }}>Your slot is held for <b className="mono">{left === null ? '--:--' : mmss(left)}</b>. If it runs out, nothing is charged and you can book again.</p>
       {err ? <div className="note" role="alert">{err}</div> : null}
       {test ? (
         <div className="stack" style={{ gap: 10 }}>

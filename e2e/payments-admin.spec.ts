@@ -71,6 +71,7 @@ test('an admin price change shows on the storefront straight away', async ({ bro
 });
 
 test('an admin can add a staff member and a coupon, and a patient cannot reach admin pages', async ({ browser }) => {
+  test.slow(); // scans nine admin pages for accessibility; it already takes ~30s, the default limit
   const admin = await sessionFor(browser, ADMIN, 'Admin Person');
   for (const p of ['/admin', '/admin/tests', '/admin/tests/cbc', '/admin/ranges', '/admin/coupons', '/admin/slots', '/admin/inbox', '/admin/settings']) {
     await admin.page.goto(p);
