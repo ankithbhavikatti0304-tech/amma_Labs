@@ -91,10 +91,10 @@ Known gaps and judgement calls are listed at the end of this file and in `docs/L
 
 ## Deploy
 
-The suggested setup is **Vercel + a managed Postgres (Neon or Supabase)** and an S3-compatible bucket.
+The suggested setup is **Vercel + a managed Postgres (Supabase or Neon)** and an S3-compatible bucket.
 
 0. **Build.** Vercel runs `npm run vercel-build`, which applies pending database migrations on **production** deploys only (never on previews), then builds. The catalogue seed and the first admin are still one-off commands from your computer (step 1).
-1. **Database.** Create a Postgres. Set `DATABASE_URL` to the *pooled* connection string and `DIRECT_URL` to the direct one. After deploy, run `npm run db:deploy` against production (CI step or a one-off), then `npm run db:seed`, then `npm run staff:add` for the first admin.
+1. **Database.** Create a Postgres. Set `DATABASE_URL` to the *pooled* connection string and `DIRECT_URL` to the direct one. **On Supabase:** Vercel only speaks IPv4, so skip the `db.<ref>.supabase.co` host. Use the shared pooler: *Connect* in the Supabase dashboard → transaction mode (port 6543) for `DATABASE_URL`, session mode (port 5432) for `DIRECT_URL`. All tables have row-level security switched on with no policies, so the public Data API cannot read anything; the app connects as the database owner. Also turn the Data API off (Settings → API) since the app does not use it. After deploy, run `npm run db:deploy` against production (CI step or a one-off), then `npm run db:seed`, then `npm run staff:add` for the first admin.
 2. **Environment.** Set everything in `.env.example` that is marked required for production. `APP_URL` must be `https://…`; set `TRUST_PROXY=true` on Vercel.
 3. **SMS.** Register a DLT sender and an OTP template with MSG91 (Indian SMS requires it); set `SMS_PROVIDER=msg91` and the keys. Optional booking-message templates are listed in `src/server/notify.ts`.
 4. **Payments.** To launch without online payment, set `PAYMENT_PROVIDER=none`: checkout then offers only *Pay at collection*, the server refuses online orders, and no gateway keys are needed. When you are ready for online payment, create Razorpay keys, enable auto-capture, and add a webhook to `https://YOUR-SITE/api/webhooks/razorpay` for `payment.captured`, `order.paid` and `payment.failed`. Set `PAYMENT_PROVIDER=razorpay`.
