@@ -6,20 +6,27 @@ Tagline: **"Tested with a mother's care."**
 
 ## Source of truth
 
-- `prototype/index.html` is the approved UI. It is a single file with inline CSS and JS. Open it in a browser to see every screen and flow. Match its look, layout and behaviour.
+- `prototype/index.html` is the approved UI (single file, inline CSS and JS). Open it in a browser to compare any screen. The app matches its look, layout and behaviour; placeholders and demo-only parts (sample report note, "next stage" button, wireframe-lines toggle, on-screen OTP in production) were replaced with real behaviour.
 - `docs/SPEC.md` lists the features, data model, API and integrations to build.
-- The catalogue (tests, packages, prices, report times, included parameters) is in the prototype's `<script>` as the `T` array, built with `add(...)`. Reference ranges are in `REF`. Move both into the database seed. **All prices are placeholders** copied from a competitor, so the lab must supply real ones.
+- The catalogue (tests, packages, prices, report times, included parameters) came from the prototype's `T` array and `REF` table via `scripts/extract-prototype-data.mjs` into `prisma/data/catalogue.json`, which `prisma/seed.ts` loads (create-if-missing; `SEED_FORCE=1` to overwrite). **All prices and reference ranges are placeholders** from a competitor/rough adult ranges; the lab must supply real ones (see `docs/LAUNCH-CHECKLIST.md`).
 
-## Decide before writing code
+## Stack (confirmed by VG)
 
-Confirm the stack with VG first. The suggested default is:
+Next.js 16 (App Router) + TypeScript + Tailwind CSS 4, PostgreSQL + Prisma 7, Vitest, Playwright. Phone + OTP auth with a server-side session in an httpOnly cookie. Hosting target: Vercel + managed Postgres (Neon/Supabase) + an S3-compatible bucket. The ASP.NET alternative was not chosen.
 
-- **Next.js (App Router) + TypeScript + Tailwind CSS**, with server actions and route handlers.
-- **PostgreSQL + Prisma**.
-- **Auth:** phone number + OTP, with the session in an httpOnly cookie.
-- **Hosting:** Vercel plus a managed Postgres, such as Neon or Supabase.
+## Working in this repo
 
-Alternative: an ASP.NET Core Web API backend with a React (Vite) frontend, if VG prefers .NET.
+- Setup and commands are in `README.md`. Before saying something works, run `npm run lint && npm run typecheck && npm test`, and `npm run build && npm run e2e` for anything user-facing.
+- **Next.js 16 differs from older versions** (`proxy.ts` replaces middleware, async `cookies()`/`params`, caching model). `AGENTS.md` and `node_modules/next/dist/docs/` are the reference; read the relevant guide before using an API from memory.
+- `src/server/**` is server-only (`import 'server-only'`). `src/lib/**` is pure and shared with the browser. Never import `src/server` values into a client component (types only).
+- **Money:** all pricing goes through `src/lib/pricing.ts`. The server recomputes the bill from the database at checkout and compares it with what the browser showed; never trust a client price.
+- **Result flags** are decided by the server (`src/lib/results.ts`, `src/lib/report.ts`), per patient age and sex. A technician types a number, never a flag.
+- **Authorization lives in the server code of each API route and page**, not in the UI. New staff/admin endpoints go in `src/server/rbac.int.test.ts`'s matrix.
+- **Never log or audit** OTPs, result values, phone numbers or free text from patients. Use `src/server/log.ts` (redacts) and `audit()` (ids and counts only).
+- Every mutation validates input with Zod and goes through `api()` in `src/server/http.ts` (origin check, auth, rate limit, error mapping).
+- Admin edits that change what patients see must call `invalidateCatalogue()`.
+- The prototype's CSS is ported as-is into `src/styles/` (components layer). Two status text colours (`--ok`, `--lo`) are a shade darker than the prototype for WCAG AA contrast; the five brand tokens are unchanged. Run the axe e2e after any colour or markup change.
+- Dev-only providers (`SMS_PROVIDER=dev`, `PAYMENT_PROVIDER=mock`, `STORAGE_DRIVER=local`) are refused in production by `src/server/env.ts`. Keep it that way.
 
 ## Design system (keep it exactly)
 

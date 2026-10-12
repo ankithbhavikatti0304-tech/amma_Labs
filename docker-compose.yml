@@ -1,0 +1,12 @@
+# Local Postgres for development:  docker compose up -d db
+# Then use  DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/amma_dev
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: amma_dev
+    ports: ['127.0.0.1:5432:5432']
+    volumes: [dbdata:/var/lib/postgresql/data]
+volumes:
+  dbdata:

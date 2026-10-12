@@ -1,0 +1,2211 @@
+{
+  "categories": [
+    {
+      "id": "full",
+      "name": "Full body packages",
+      "icon": "body",
+      "tint": "c",
+      "mascot": "family",
+      "mascotArg": null,
+      "sort": 0
+    },
+    {
+      "id": "men",
+      "name": "Men's health",
+      "icon": "men",
+      "tint": "b",
+      "mascot": "person",
+      "mascotArg": "madv",
+      "sort": 1
+    },
+    {
+      "id": "women",
+      "name": "Women's health",
+      "icon": "women",
+      "tint": "a",
+      "mascot": "person",
+      "mascotArg": "wadv",
+      "sort": 2
+    },
+    {
+      "id": "liver",
+      "name": "Liver & kidney",
+      "icon": "liver",
+      "tint": "c",
+      "mascot": "lk",
+      "mascotArg": null,
+      "sort": 3
+    },
+    {
+      "id": "thyroid",
+      "name": "Thyroid",
+      "icon": "thyroid",
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null,
+      "sort": 4
+    },
+    {
+      "id": "hormone",
+      "name": "Hormones",
+      "icon": "hormone",
+      "tint": "a",
+      "mascot": "flask",
+      "mascotArg": "#66A3BF",
+      "sort": 5
+    },
+    {
+      "id": "allergy",
+      "name": "Allergy",
+      "icon": "allergy",
+      "tint": "a",
+      "mascot": "flower",
+      "mascotArg": null,
+      "sort": 6
+    },
+    {
+      "id": "fever",
+      "name": "Fever",
+      "icon": "fever",
+      "tint": "c",
+      "mascot": "thermo",
+      "mascotArg": null,
+      "sort": 7
+    },
+    {
+      "id": "diabetes",
+      "name": "Diabetes",
+      "icon": "diabetes",
+      "tint": "b",
+      "mascot": "sugar",
+      "mascotArg": "1",
+      "sort": 8
+    },
+    {
+      "id": "vitamin",
+      "name": "Vitamins",
+      "icon": "vitamin",
+      "tint": "c",
+      "mascot": "sun",
+      "mascotArg": null,
+      "sort": 9
+    },
+    {
+      "id": "scan",
+      "name": "X-rays, scans & more",
+      "icon": "scan",
+      "tint": "b",
+      "mascot": "xray",
+      "mascotArg": null,
+      "sort": 10
+    }
+  ],
+  "groups": {
+    "cbc": {
+      "name": "Complete blood count",
+      "parameters": [
+        "Hemoglobin",
+        "WBC count",
+        "Platelet count"
+      ]
+    },
+    "lipid": {
+      "name": "Lipid profile",
+      "parameters": [
+        "Total cholesterol",
+        "HDL cholesterol",
+        "LDL cholesterol",
+        "Triglycerides"
+      ]
+    },
+    "lft": {
+      "name": "Liver function",
+      "parameters": [
+        "Bilirubin, total",
+        "SGOT (AST)",
+        "SGPT (ALT)",
+        "Alkaline phosphatase",
+        "Albumin"
+      ]
+    },
+    "kft": {
+      "name": "Kidney function",
+      "parameters": [
+        "Urea",
+        "Creatinine",
+        "Uric acid"
+      ]
+    },
+    "lytes": {
+      "name": "Electrolytes",
+      "parameters": [
+        "Sodium",
+        "Potassium",
+        "Chloride"
+      ]
+    },
+    "thy": {
+      "name": "Thyroid profile",
+      "parameters": [
+        "T3, total",
+        "T4, total",
+        "TSH"
+      ]
+    },
+    "thyf": {
+      "name": "Thyroid profile (free)",
+      "parameters": [
+        "Free T3",
+        "Free T4",
+        "TSH"
+      ]
+    },
+    "dia": {
+      "name": "Diabetes",
+      "parameters": [
+        "Glucose, fasting",
+        "HbA1c"
+      ]
+    },
+    "vit": {
+      "name": "Vitamins",
+      "parameters": [
+        "Vitamin D (25-OH)",
+        "Vitamin B12"
+      ]
+    },
+    "iron": {
+      "name": "Iron studies",
+      "parameters": [
+        "Serum iron",
+        "Ferritin"
+      ]
+    }
+  },
+  "reference": {
+    "Hemoglobin": {
+      "low": 13,
+      "high": 17,
+      "unit": "g/dL",
+      "decimals": 1
+    },
+    "WBC count": {
+      "low": 4,
+      "high": 11,
+      "unit": "×10³/µL",
+      "decimals": 1
+    },
+    "Platelet count": {
+      "low": 150,
+      "high": 410,
+      "unit": "×10³/µL",
+      "decimals": 0
+    },
+    "Total cholesterol": {
+      "low": 125,
+      "high": 200,
+      "unit": "mg/dL",
+      "decimals": 0
+    },
+    "HDL cholesterol": {
+      "low": 40,
+      "high": 60,
+      "unit": "mg/dL",
+      "decimals": 0
+    },
+    "LDL cholesterol": {
+      "low": 50,
+      "high": 100,
+      "unit": "mg/dL",
+      "decimals": 0
+    },
+    "Triglycerides": {
+      "low": 50,
+      "high": 150,
+      "unit": "mg/dL",
+      "decimals": 0
+    },
+    "Bilirubin, total": {
+      "low": 0.3,
+      "high": 1.2,
+      "unit": "mg/dL",
+      "decimals": 1
+    },
+    "SGOT (AST)": {
+      "low": 5,
+      "high": 40,
+      "unit": "U/L",
+      "decimals": 0
+    },
+    "SGPT (ALT)": {
+      "low": 7,
+      "high": 56,
+      "unit": "U/L",
+      "decimals": 0
+    },
+    "Alkaline phosphatase": {
+      "low": 44,
+      "high": 147,
+      "unit": "U/L",
+      "decimals": 0
+    },
+    "Albumin": {
+      "low": 3.5,
+      "high": 5,
+      "unit": "g/dL",
+      "decimals": 1
+    },
+    "Urea": {
+      "low": 15,
+      "high": 40,
+      "unit": "mg/dL",
+      "decimals": 0
+    },
+    "Creatinine": {
+      "low": 0.7,
+      "high": 1.3,
+      "unit": "mg/dL",
+      "decimals": 2
+    },
+    "Uric acid": {
+      "low": 3.4,
+      "high": 7,
+      "unit": "mg/dL",
+      "decimals": 1
+    },
+    "Sodium": {
+      "low": 136,
+      "high": 145,
+      "unit": "mmol/L",
+      "decimals": 0
+    },
+    "Potassium": {
+      "low": 3.5,
+      "high": 5.1,
+      "unit": "mmol/L",
+      "decimals": 1
+    },
+    "Chloride": {
+      "low": 98,
+      "high": 107,
+      "unit": "mmol/L",
+      "decimals": 0
+    },
+    "T3, total": {
+      "low": 80,
+      "high": 200,
+      "unit": "ng/dL",
+      "decimals": 0
+    },
+    "T4, total": {
+      "low": 5.1,
+      "high": 14.1,
+      "unit": "µg/dL",
+      "decimals": 1
+    },
+    "TSH": {
+      "low": 0.27,
+      "high": 4.2,
+      "unit": "µIU/mL",
+      "decimals": 2
+    },
+    "Free T3": {
+      "low": 2,
+      "high": 4.4,
+      "unit": "pg/mL",
+      "decimals": 2
+    },
+    "Free T4": {
+      "low": 0.93,
+      "high": 1.7,
+      "unit": "ng/dL",
+      "decimals": 2
+    },
+    "Glucose, fasting": {
+      "low": 70,
+      "high": 100,
+      "unit": "mg/dL",
+      "decimals": 0
+    },
+    "Glucose, post-prandial": {
+      "low": 70,
+      "high": 140,
+      "unit": "mg/dL",
+      "decimals": 0
+    },
+    "HbA1c": {
+      "low": 4,
+      "high": 5.6,
+      "unit": "%",
+      "decimals": 1
+    },
+    "Vitamin D (25-OH)": {
+      "low": 30,
+      "high": 100,
+      "unit": "ng/mL",
+      "decimals": 1
+    },
+    "Vitamin B12": {
+      "low": 200,
+      "high": 900,
+      "unit": "pg/mL",
+      "decimals": 0
+    },
+    "Serum iron": {
+      "low": 60,
+      "high": 170,
+      "unit": "µg/dL",
+      "decimals": 0
+    },
+    "Ferritin": {
+      "low": 30,
+      "high": 300,
+      "unit": "ng/mL",
+      "decimals": 0
+    },
+    "Anti-TPO": {
+      "low": 1,
+      "high": 34,
+      "unit": "IU/mL",
+      "decimals": 1
+    },
+    "Anti-thyroglobulin": {
+      "low": 1,
+      "high": 115,
+      "unit": "IU/mL",
+      "decimals": 1
+    },
+    "PTH, intact": {
+      "low": 15,
+      "high": 65,
+      "unit": "pg/mL",
+      "decimals": 1
+    },
+    "17-OH progesterone": {
+      "low": 0.2,
+      "high": 1.3,
+      "unit": "ng/mL",
+      "decimals": 2
+    },
+    "AMH": {
+      "low": 1,
+      "high": 4,
+      "unit": "ng/mL",
+      "decimals": 2
+    },
+    "Cortisol, morning": {
+      "low": 6.2,
+      "high": 19.4,
+      "unit": "µg/dL",
+      "decimals": 1
+    },
+    "Testosterone": {
+      "low": 264,
+      "high": 916,
+      "unit": "ng/dL",
+      "decimals": 0
+    },
+    "Prolactin": {
+      "low": 4,
+      "high": 15.2,
+      "unit": "ng/mL",
+      "decimals": 1
+    },
+    "Estradiol": {
+      "low": 15,
+      "high": 350,
+      "unit": "pg/mL",
+      "decimals": 0
+    }
+  },
+  "tests": [
+    {
+      "id": "fam",
+      "name": "Fitness Advanced Package for Men",
+      "categories": [
+        "men",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 88,
+      "tatMinHours": 36,
+      "tatMaxHours": 48,
+      "price": 3999,
+      "mrp": 7998,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function (KFT)",
+        "Thyroid profile",
+        "HbA1c & fasting glucose",
+        "Vitamin D & B12",
+        "Iron studies",
+        "Urine routine",
+        "Testosterone"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "thy",
+        "dia",
+        "vit",
+        "iron",
+        "Testosterone"
+      ],
+      "tint": "b",
+      "mascot": "person",
+      "mascotArg": "fam"
+    },
+    {
+      "id": "mapl",
+      "name": "Men Advanced Plus Health Checkup",
+      "categories": [
+        "men",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 99,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 3559,
+      "mrp": 7118,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function with electrolytes",
+        "Thyroid profile",
+        "HbA1c & fasting glucose",
+        "Vitamin D & B12",
+        "hs-CRP (heart risk)",
+        "Urine routine"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "lytes",
+        "thy",
+        "dia",
+        "vit"
+      ],
+      "tint": "b",
+      "mascot": "person",
+      "mascotArg": "mapl"
+    },
+    {
+      "id": "madv",
+      "name": "Men Advanced Health Checkup",
+      "categories": [
+        "men",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 84,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 2389,
+      "mrp": 4778,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function (KFT)",
+        "Thyroid profile",
+        "HbA1c",
+        "Vitamin D",
+        "Urine routine"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "thy",
+        "dia",
+        "Vitamin D (25-OH)"
+      ],
+      "tint": "b",
+      "mascot": "person",
+      "mascotArg": "madv"
+    },
+    {
+      "id": "smen",
+      "name": "Senior Citizen Men Advanced Health Checkup",
+      "categories": [
+        "men",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 103,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 4299,
+      "mrp": 8598,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function with electrolytes",
+        "Thyroid profile",
+        "HbA1c & fasting glucose",
+        "Vitamin D & B12",
+        "Calcium & phosphorus",
+        "Urine routine",
+        "PSA (prostate)"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "lytes",
+        "thy",
+        "dia",
+        "vit"
+      ],
+      "tint": "b",
+      "mascot": "person",
+      "mascotArg": "smen"
+    },
+    {
+      "id": "pmm",
+      "name": "Pre-Marital Health Checkup for Men",
+      "categories": [
+        "men",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 48,
+      "tatMinHours": 36,
+      "tatMaxHours": 48,
+      "price": 2299,
+      "mrp": 4598,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Blood group & Rh type",
+        "Infection screening panel",
+        "HbA1c",
+        "Thyroid profile",
+        "Urine routine"
+      ],
+      "parameters": [
+        "cbc",
+        "thy",
+        "HbA1c"
+      ],
+      "tint": "b",
+      "mascot": "person",
+      "mascotArg": "pmm"
+    },
+    {
+      "id": "faw",
+      "name": "Fitness Advanced Package for Women",
+      "categories": [
+        "women",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 89,
+      "tatMinHours": 36,
+      "tatMaxHours": 48,
+      "price": 3999,
+      "mrp": 7998,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function (KFT)",
+        "Thyroid profile",
+        "HbA1c & fasting glucose",
+        "Vitamin D & B12",
+        "Iron studies",
+        "Urine routine"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "thy",
+        "dia",
+        "vit",
+        "iron"
+      ],
+      "tint": "a",
+      "mascot": "person",
+      "mascotArg": "faw"
+    },
+    {
+      "id": "wapl",
+      "name": "Women Advanced Plus Health Checkup",
+      "categories": [
+        "women",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 81,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 3589,
+      "mrp": 7178,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function with electrolytes",
+        "Thyroid profile",
+        "HbA1c & fasting glucose",
+        "Vitamin D & B12",
+        "hs-CRP (heart risk)",
+        "Urine routine"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "lytes",
+        "thy",
+        "dia",
+        "vit"
+      ],
+      "tint": "a",
+      "mascot": "person",
+      "mascotArg": "wapl"
+    },
+    {
+      "id": "wadv",
+      "name": "Women Advanced Health Checkup",
+      "categories": [
+        "women",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 67,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 2529,
+      "mrp": 5058,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function (KFT)",
+        "Thyroid profile",
+        "HbA1c",
+        "Vitamin D",
+        "Urine routine",
+        "Iron studies"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "thy",
+        "HbA1c",
+        "Vitamin D (25-OH)",
+        "iron"
+      ],
+      "tint": "a",
+      "mascot": "person",
+      "mascotArg": "wadv"
+    },
+    {
+      "id": "swom",
+      "name": "Senior Citizen Women Advanced Health Checkup",
+      "categories": [
+        "women",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 101,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 4149,
+      "mrp": 8298,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Lipid profile",
+        "Liver function (LFT)",
+        "Kidney function with electrolytes",
+        "Thyroid profile",
+        "HbA1c & fasting glucose",
+        "Vitamin D & B12",
+        "Calcium & phosphorus",
+        "Urine routine"
+      ],
+      "parameters": [
+        "cbc",
+        "lipid",
+        "lft",
+        "kft",
+        "lytes",
+        "thy",
+        "dia",
+        "vit"
+      ],
+      "tint": "a",
+      "mascot": "person",
+      "mascotArg": "swom"
+    },
+    {
+      "id": "fevp",
+      "name": "Fever Package Basic",
+      "categories": [
+        "fever",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 31,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 999,
+      "mrp": 1599,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Complete blood count (CBC)",
+        "Dengue NS1 antigen",
+        "Malaria antigen",
+        "Typhoid (Widal)",
+        "Urine routine"
+      ],
+      "parameters": [
+        "cbc"
+      ],
+      "tint": "c",
+      "mascot": "thermo",
+      "mascotArg": null
+    },
+    {
+      "id": "diap",
+      "name": "Diabetes Care Package",
+      "categories": [
+        "diabetes",
+        "full"
+      ],
+      "isPackage": true,
+      "parameterCount": 42,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 1299,
+      "mrp": 2599,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "HbA1c",
+        "Fasting glucose",
+        "Lipid profile",
+        "Kidney function (KFT)",
+        "Urine microalbumin"
+      ],
+      "parameters": [
+        "dia",
+        "lipid",
+        "kft"
+      ],
+      "tint": "b",
+      "mascot": "sugar",
+      "mascotArg": "1"
+    },
+    {
+      "id": "lft",
+      "name": "LFT (Liver Function Test)",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": 11,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 439,
+      "mrp": 779,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [
+        "Bilirubin – total, direct, indirect",
+        "SGOT (AST)",
+        "SGPT (ALT)",
+        "Alkaline phosphatase",
+        "GGT",
+        "Total protein",
+        "Albumin",
+        "Globulin",
+        "A/G ratio"
+      ],
+      "parameters": [
+        "lft"
+      ],
+      "tint": "c",
+      "mascot": "liver",
+      "mascotArg": null
+    },
+    {
+      "id": "kfte",
+      "name": "KFT with Electrolytes (Kidney Function Test with Electrolytes)",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": 8,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 439,
+      "mrp": 939,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Urea",
+        "BUN",
+        "Creatinine",
+        "BUN/creatinine ratio",
+        "Uric acid",
+        "Sodium",
+        "Potassium",
+        "Chloride"
+      ],
+      "parameters": [
+        "kft",
+        "lytes"
+      ],
+      "tint": "c",
+      "mascot": "kidney",
+      "mascotArg": null
+    },
+    {
+      "id": "lkft",
+      "name": "LFT and KFT (Liver Function Test & Kidney Function Test)",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": 19,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 919,
+      "mrp": 1699,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "All 11 liver function parameters",
+        "All 8 kidney function parameters"
+      ],
+      "parameters": [
+        "lft",
+        "kft",
+        "lytes"
+      ],
+      "tint": "c",
+      "mascot": "lk",
+      "mascotArg": null
+    },
+    {
+      "id": "sgpt",
+      "name": "SGPT (Alanine Transaminase)",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 179,
+      "mrp": 200,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "SGPT (ALT)"
+      ],
+      "tint": "c",
+      "mascot": "liver",
+      "mascotArg": null
+    },
+    {
+      "id": "sgot",
+      "name": "SGOT (Aspartate Aminotransferase)",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 179,
+      "mrp": 210,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "SGOT (AST)"
+      ],
+      "tint": "c",
+      "mascot": "liver",
+      "mascotArg": null
+    },
+    {
+      "id": "uric",
+      "name": "Uric Acid, Serum",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 169,
+      "mrp": 169,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Uric acid"
+      ],
+      "tint": "c",
+      "mascot": "kidney",
+      "mascotArg": null
+    },
+    {
+      "id": "creat",
+      "name": "Serum Creatinine",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 159,
+      "mrp": 159,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Creatinine"
+      ],
+      "tint": "c",
+      "mascot": "kidney",
+      "mascotArg": null
+    },
+    {
+      "id": "lytes",
+      "name": "Serum Electrolytes",
+      "categories": [
+        "liver"
+      ],
+      "isPackage": false,
+      "parameterCount": 3,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 389,
+      "mrp": 449,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Sodium",
+        "Potassium",
+        "Chloride"
+      ],
+      "parameters": [
+        "lytes"
+      ],
+      "tint": "c",
+      "mascot": "kidney",
+      "mascotArg": null
+    },
+    {
+      "id": "thyt",
+      "name": "Thyroid Profile Total (T3, T4 & TSH)",
+      "categories": [
+        "thyroid",
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": 3,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 539,
+      "mrp": 609,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [
+        "Total T3",
+        "Total T4",
+        "TSH"
+      ],
+      "parameters": [
+        "thy"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "tsh",
+      "name": "TSH (Thyroid Stimulating Hormone) Ultrasensitive",
+      "categories": [
+        "thyroid",
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 369,
+      "mrp": 419,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "TSH"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "tpo",
+      "name": "Anti-TPO Antibody (Anti-Thyroid Peroxidase Antibody)",
+      "categories": [
+        "thyroid"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 1589,
+      "mrp": 1589,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Anti-TPO"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "atap",
+      "name": "Anti Thyroid Antibodies Panel",
+      "categories": [
+        "thyroid"
+      ],
+      "isPackage": false,
+      "parameterCount": 2,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 2429,
+      "mrp": 2700,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Anti-TPO antibody",
+        "Anti-thyroglobulin antibody"
+      ],
+      "parameters": [
+        "Anti-TPO",
+        "Anti-thyroglobulin"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "atg",
+      "name": "Anti Thyroglobulin Antibody",
+      "categories": [
+        "thyroid"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 1259,
+      "mrp": 1400,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Anti-thyroglobulin"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "thyf",
+      "name": "Thyroid Profile Free (FT3, FT4 & TSH)",
+      "categories": [
+        "thyroid"
+      ],
+      "isPackage": false,
+      "parameterCount": 3,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 939,
+      "mrp": 1049,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Free T3",
+        "Free T4",
+        "TSH"
+      ],
+      "parameters": [
+        "thyf"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "pth",
+      "name": "PTH (Intact Parathyroid Hormone)",
+      "categories": [
+        "thyroid"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 1599,
+      "mrp": 1600,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "PTH, intact"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "ft4",
+      "name": "Thyroxine – Free (FT4)",
+      "categories": [
+        "thyroid"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 339,
+      "mrp": 380,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Free T4"
+      ],
+      "tint": "b",
+      "mascot": "fly",
+      "mascotArg": null
+    },
+    {
+      "id": "ohp",
+      "name": "17 Alpha Hydroxy Progesterone",
+      "categories": [
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 72,
+      "tatMaxHours": 72,
+      "price": 1429,
+      "mrp": 1429,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "17-OH progesterone"
+      ],
+      "tint": "a",
+      "mascot": "flask",
+      "mascotArg": "#66A3BF"
+    },
+    {
+      "id": "amh",
+      "name": "AMH (Anti-Mullerian Hormone)",
+      "categories": [
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 2129,
+      "mrp": 2369,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "AMH"
+      ],
+      "tint": "a",
+      "mascot": "flask",
+      "mascotArg": "#E57C73"
+    },
+    {
+      "id": "cort",
+      "name": "Cortisol, Serum (Morning Sample)",
+      "categories": [
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 659,
+      "mrp": 659,
+      "fasting": false,
+      "morningSample": true,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Cortisol, morning"
+      ],
+      "tint": "a",
+      "mascot": "flask",
+      "mascotArg": "#E9B44C"
+    },
+    {
+      "id": "testo",
+      "name": "Testosterone Total",
+      "categories": [
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 659,
+      "mrp": 659,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Testosterone"
+      ],
+      "tint": "a",
+      "mascot": "flask",
+      "mascotArg": "#3368A0"
+    },
+    {
+      "id": "prl",
+      "name": "Serum Prolactin",
+      "categories": [
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 549,
+      "mrp": 549,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Prolactin"
+      ],
+      "tint": "a",
+      "mascot": "flask",
+      "mascotArg": "#C98BB0"
+    },
+    {
+      "id": "e2",
+      "name": "E2 (Estradiol)",
+      "categories": [
+        "hormone"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 18,
+      "tatMaxHours": 24,
+      "price": 689,
+      "mrp": 839,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Estradiol"
+      ],
+      "tint": "a",
+      "mascot": "flask",
+      "mascotArg": "#7FB5A8"
+    },
+    {
+      "id": "phad",
+      "name": "Allergy Screen – Phadiatop (Adult & >5yr), ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 1169,
+      "mrp": 1200,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "flower",
+      "mascotArg": null
+    },
+    {
+      "id": "asp",
+      "name": "Allergy – Aspergillus Fumigatus Specific IgE, ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 1079,
+      "mrp": 2160,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "mould",
+      "mascotArg": null
+    },
+    {
+      "id": "eggw",
+      "name": "Allergy – Egg White (Anda), ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 1199,
+      "mrp": 1200,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "egg",
+      "mascotArg": null
+    },
+    {
+      "id": "eggy",
+      "name": "Allergy – Egg Yolk (Anda), ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 1079,
+      "mrp": 1200,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "fried",
+      "mascotArg": null
+    },
+    {
+      "id": "wht",
+      "name": "Allergy – Wheat (Gehon), ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 1079,
+      "mrp": 1200,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "wheat",
+      "mascotArg": null
+    },
+    {
+      "id": "hdm",
+      "name": "Allergy – House Dust Mite (Dermatophagoides farinae), ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 1079,
+      "mrp": 1415,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "mite",
+      "mascotArg": null
+    },
+    {
+      "id": "vnv",
+      "name": "Allergy – Vegetarian + Non-Vegetarian Panel, ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": 23,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 14650,
+      "mrp": 16300,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [
+        "Wheat, rice, maize",
+        "Milk, egg white, egg yolk",
+        "Peanut, soybean, sesame",
+        "Chicken, mutton, fish, prawn",
+        "Tomato, potato, onion",
+        "…and 11 more foods"
+      ],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "plate",
+      "mascotArg": "cd"
+    },
+    {
+      "id": "veg",
+      "name": "Allergy – Vegetarian Panel, ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": 12,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 7649,
+      "mrp": 8500,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [
+        "Wheat, rice, maize",
+        "Milk",
+        "Peanut, soybean",
+        "Tomato, potato, onion",
+        "Banana, orange",
+        "…and 2 more"
+      ],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "plate",
+      "mascotArg": "c"
+    },
+    {
+      "id": "nveg",
+      "name": "Allergy – Non-vegetarian Panel, ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": 11,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 6999,
+      "mrp": 7800,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [
+        "Chicken, mutton",
+        "Egg white, egg yolk",
+        "Fish, prawn, crab",
+        "…and 5 more"
+      ],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "plate",
+      "mascotArg": "d"
+    },
+    {
+      "id": "whz",
+      "name": "Allergy – Wheeze / Rhinitis Panel, ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": 13,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 6839,
+      "mrp": 7600,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [
+        "House dust mite",
+        "Cockroach",
+        "Cat and dog dander",
+        "Grass and tree pollens",
+        "Moulds (Aspergillus, Alternaria)",
+        "…and 6 more"
+      ],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "flower",
+      "mascotArg": null
+    },
+    {
+      "id": "ecz",
+      "name": "Allergy – Eczema Comprehensive Panel, ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": 20,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 10800,
+      "mrp": 12000,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [
+        "Milk, egg, wheat, peanut",
+        "House dust mite",
+        "Cat and dog dander",
+        "…and 13 more"
+      ],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "bandaid",
+      "mascotArg": null
+    },
+    {
+      "id": "eczb",
+      "name": "Allergy – Eczema Basic Panel, ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": 11,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 5309,
+      "mrp": 5900,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [
+        "Milk, egg, wheat",
+        "House dust mite",
+        "…and 7 more"
+      ],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "bandaid",
+      "mascotArg": null
+    },
+    {
+      "id": "oni",
+      "name": "Allergy – Onion (Piaz), ImmunoCAP",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 1079,
+      "mrp": 1200,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "onion",
+      "mascotArg": null
+    },
+    {
+      "id": "a107",
+      "name": "Allergy Panel (107 Allergens), LIA",
+      "categories": [
+        "allergy"
+      ],
+      "isPackage": false,
+      "parameterCount": 90,
+      "tatMinHours": 48,
+      "tatMaxHours": 72,
+      "price": 5850,
+      "mrp": 6500,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [
+        "Food allergens",
+        "Inhaled allergens (dust, pollen, mould)",
+        "Animal dander",
+        "Insect venom"
+      ],
+      "parameters": [],
+      "tint": "a",
+      "mascot": "clip",
+      "mascotArg": null
+    },
+    {
+      "id": "cbc",
+      "name": "Complete Blood Count (CBC)",
+      "categories": [
+        "fever"
+      ],
+      "isPackage": false,
+      "parameterCount": 21,
+      "tatMinHours": 6,
+      "tatMaxHours": 12,
+      "price": 299,
+      "mrp": 399,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [
+        "Hemoglobin",
+        "RBC, WBC, platelet count",
+        "Differential count",
+        "PCV, MCV, MCH, MCHC",
+        "ESR"
+      ],
+      "parameters": [
+        "cbc"
+      ],
+      "tint": "c",
+      "mascot": "cbc",
+      "mascotArg": null
+    },
+    {
+      "id": "ns1",
+      "name": "Dengue NS1 Antigen",
+      "categories": [
+        "fever"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 6,
+      "tatMaxHours": 12,
+      "price": 599,
+      "mrp": 750,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "c",
+      "mascot": "mosq",
+      "mascotArg": null
+    },
+    {
+      "id": "mal",
+      "name": "Malaria Parasite Antigen (Rapid)",
+      "categories": [
+        "fever"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 6,
+      "tatMaxHours": 12,
+      "price": 399,
+      "mrp": 450,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "c",
+      "mascot": "mosq",
+      "mascotArg": null
+    },
+    {
+      "id": "widal",
+      "name": "Typhoid (Widal) Test",
+      "categories": [
+        "fever"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 249,
+      "mrp": 300,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "c",
+      "mascot": "thermo",
+      "mascotArg": null
+    },
+    {
+      "id": "hba1c",
+      "name": "HbA1c (Glycosylated Hemoglobin)",
+      "categories": [
+        "diabetes"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 6,
+      "tatMaxHours": 12,
+      "price": 449,
+      "mrp": 550,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [],
+      "parameters": [
+        "HbA1c"
+      ],
+      "tint": "b",
+      "mascot": "hba",
+      "mascotArg": null
+    },
+    {
+      "id": "fbs",
+      "name": "Glucose – Fasting",
+      "categories": [
+        "diabetes"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 6,
+      "tatMaxHours": 12,
+      "price": 99,
+      "mrp": 99,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Glucose, fasting"
+      ],
+      "tint": "b",
+      "mascot": "sugar",
+      "mascotArg": null
+    },
+    {
+      "id": "ppbs",
+      "name": "Glucose – Post Prandial (2 hours)",
+      "categories": [
+        "diabetes"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 6,
+      "tatMaxHours": 12,
+      "price": 99,
+      "mrp": 99,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Glucose, post-prandial"
+      ],
+      "tint": "b",
+      "mascot": "sugar",
+      "mascotArg": null
+    },
+    {
+      "id": "vitd",
+      "name": "Vitamin D (25-OH)",
+      "categories": [
+        "vitamin"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 899,
+      "mrp": 1200,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": true,
+      "includes": [],
+      "parameters": [
+        "Vitamin D (25-OH)"
+      ],
+      "tint": "c",
+      "mascot": "sun",
+      "mascotArg": null
+    },
+    {
+      "id": "b12",
+      "name": "Vitamin B12",
+      "categories": [
+        "vitamin"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 699,
+      "mrp": 900,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [],
+      "parameters": [
+        "Vitamin B12"
+      ],
+      "tint": "c",
+      "mascot": "pill",
+      "mascotArg": null
+    },
+    {
+      "id": "iron",
+      "name": "Iron Studies",
+      "categories": [
+        "vitamin"
+      ],
+      "isPackage": false,
+      "parameterCount": 4,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 699,
+      "mrp": 850,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Serum iron",
+        "TIBC",
+        "Transferrin saturation",
+        "Ferritin"
+      ],
+      "parameters": [
+        "iron"
+      ],
+      "tint": "c",
+      "mascot": "leaf",
+      "mascotArg": null
+    },
+    {
+      "id": "vdb",
+      "name": "Vitamin D & B12 Combo",
+      "categories": [
+        "vitamin"
+      ],
+      "isPackage": false,
+      "parameterCount": 2,
+      "tatMinHours": 12,
+      "tatMaxHours": 24,
+      "price": 1399,
+      "mrp": 2100,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": false,
+      "qualitative": false,
+      "popular": false,
+      "includes": [
+        "Vitamin D (25-OH)",
+        "Vitamin B12"
+      ],
+      "parameters": [
+        "vit"
+      ],
+      "tint": "c",
+      "mascot": "sun",
+      "mascotArg": "1"
+    },
+    {
+      "id": "xch",
+      "name": "Chest X-ray (PA view)",
+      "categories": [
+        "scan"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 2,
+      "tatMaxHours": 4,
+      "price": 399,
+      "mrp": 450,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": true,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "b",
+      "mascot": "xray",
+      "mascotArg": null
+    },
+    {
+      "id": "usg",
+      "name": "Ultrasound – Whole Abdomen",
+      "categories": [
+        "scan"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 2,
+      "tatMaxHours": 4,
+      "price": 1299,
+      "mrp": 1500,
+      "fasting": true,
+      "morningSample": false,
+      "centreVisit": true,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "b",
+      "mascot": "usg",
+      "mascotArg": null
+    },
+    {
+      "id": "ecg",
+      "name": "ECG (Resting 12-lead)",
+      "categories": [
+        "scan"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 1,
+      "tatMaxHours": 2,
+      "price": 299,
+      "mrp": 350,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": true,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "b",
+      "mascot": "heart",
+      "mascotArg": null
+    },
+    {
+      "id": "xkn",
+      "name": "X-ray Knee (AP & Lateral)",
+      "categories": [
+        "scan"
+      ],
+      "isPackage": false,
+      "parameterCount": null,
+      "tatMinHours": 2,
+      "tatMaxHours": 4,
+      "price": 599,
+      "mrp": 700,
+      "fasting": false,
+      "morningSample": false,
+      "centreVisit": true,
+      "qualitative": true,
+      "popular": false,
+      "includes": [],
+      "parameters": [],
+      "tint": "b",
+      "mascot": "knee",
+      "mascotArg": null
+    }
+  ],
+  "people": [
+    "fam",
+    "mapl",
+    "madv",
+    "smen",
+    "pmm",
+    "faw",
+    "wapl",
+    "wadv",
+    "nurse",
+    "swom"
+  ]
+}
