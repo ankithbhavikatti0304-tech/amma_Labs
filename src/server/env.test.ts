@@ -61,6 +61,32 @@ describe('environment validation', () => {
     expect(env().S3_SERVER_SIDE_ENCRYPTION).toBe('none');
   });
 
+  it('email sign-in: production needs a real email provider, and may run with no SMS at all', () => {
+    const { SMS_PROVIDER: _s, MSG91_AUTH_KEY: _a, MSG91_OTP_TEMPLATE_ID: _t, ...rest } = prod;
+    const emailProd = { ...rest, LOGIN_METHOD: 'email', SMS_PROVIDER: 'off', PAYMENT_PROVIDER: 'none' };
+    setEnv({ ...emailProd, EMAIL_PROVIDER: 'dev' });
+    expect(() => env()).toThrow(/EMAIL_PROVIDER[^\n]*login codes on screen/);
+    resetEnvCache();
+    setEnv({ ...emailProd, EMAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'k', EMAIL_FROM: 'Amma Labs <login@ammalabs.in>' });
+    expect(env()).toMatchObject({ LOGIN_METHOD: 'email', SMS_PROVIDER: 'off', EMAIL_PROVIDER: 'brevo' });
+  });
+
+  it('an email provider that is switched on must have its key and sender', () => {
+    setEnv({ ...base, NODE_ENV: 'development', APP_URL: 'http://localhost:3000', EMAIL_PROVIDER: 'resend' });
+    expect(() => env()).toThrow(/RESEND_API_KEY/);
+    resetEnvCache();
+    setEnv({ ...base, NODE_ENV: 'development', APP_URL: 'http://localhost:3000', EMAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'k' });
+    expect(() => env()).toThrow(/EMAIL_FROM/);
+  });
+
+  it('SMS sign-in cannot run with SMS off, and production still refuses the dev SMS provider', () => {
+    setEnv({ ...base, NODE_ENV: 'development', APP_URL: 'http://localhost:3000', SMS_PROVIDER: 'off' });
+    expect(() => env()).toThrow(/LOGIN_METHOD=phone/);
+    resetEnvCache();
+    setEnv({ ...prod, LOGIN_METHOD: 'email', EMAIL_PROVIDER: 'brevo', BREVO_API_KEY: 'k', EMAIL_FROM: 'a@b.co', SMS_PROVIDER: 'dev' });
+    expect(() => env()).toThrow(/SMS_PROVIDER/);
+  });
+
   it('development works with nothing but the basics', () => {
     setEnv({ ...base, NODE_ENV: 'development', APP_URL: 'http://localhost:3000' });
     expect(env()).toMatchObject({ SMS_PROVIDER: 'dev', PAYMENT_PROVIDER: 'mock', STORAGE_DRIVER: 'local' });

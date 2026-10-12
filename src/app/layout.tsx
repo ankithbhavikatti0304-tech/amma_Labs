@@ -45,7 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" data-theme={theme === 'light' || theme === 'dark' ? theme : undefined}>
       <body>
-        <AppProviders data={data} user={user} city={city}>
+        <AppProviders data={data} user={user} city={city} loginMethod={env().LOGIN_METHOD}>
           <div id="app-root">
             <a className="skip sr" href="#view">Skip to content</a>
             <Nav />

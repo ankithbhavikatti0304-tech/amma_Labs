@@ -26,7 +26,8 @@ Tick each line before real patients use the site. Things the code cannot decide 
 
 - [ ] Postgres (pooled `DATABASE_URL`, direct `DIRECT_URL`), backups on, point-in-time recovery if offered.
 - [ ] `APP_SECRET`, `CRON_SECRET` generated (`openssl rand -base64 48`), stored in the host's secret store only.
-- [ ] **MSG91**: DLT entity, sender id and OTP template approved; `SMS_PROVIDER=msg91`. Optionally templates for booking-confirmed, sample-collected and report-ready.
+- [ ] **Login codes.** Either **MSG91** (DLT entity, sender id and OTP template approved; `LOGIN_METHOD=phone`, `SMS_PROVIDER=msg91`; optionally templates for booking-confirmed, sample-collected and report-ready), or **email** while that is pending (`LOGIN_METHOD=email`, `SMS_PROVIDER=off`, `EMAIL_PROVIDER` resend or brevo, its API key and `EMAIL_FROM`). Send one real code and open it on a phone. Check it is not in spam.
+- [ ] If you start on email and later move to SMS: accounts made by email have an unverified contact phone, and phone sign-in finds accounts by phone. Plan that switch (new database, or clear the contact phones first) rather than flipping `LOGIN_METHOD` on live data.
 - [ ] **Payments.** Launching with pay-at-collection only: set `PAYMENT_PROVIDER=none`. Adding online payment later: Razorpay live keys, auto-capture on, webhook for `payment.captured`, `order.paid`, `payment.failed`, then `PAYMENT_PROVIDER=razorpay`.
 - [ ] **Bucket** created with *Block all public access*; server-side encryption on; access key limited to that bucket.
 - [ ] **WhatsApp Cloud API** (optional): templates `al_booking_confirmed`, `al_sample_collected`, `al_report_ready` approved.

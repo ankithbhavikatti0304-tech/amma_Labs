@@ -16,7 +16,8 @@ const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a
 const tokens = new Map<string, string>();
 
 async function as(name: string, role: Role = 'PATIENT') {
-  const u = await db.user.upsert({ where: { phone: `97${name.length}000000${role.length}` }, create: { phone: `97${name.length}000000${role.length}`, name, role }, update: {} });
+  const phone = `97${name.length}000000${role.length}`;
+  const u = (await db.user.findFirst({ where: { phone } })) ?? (await db.user.create({ data: { phone, name, role } }));
   const t = tokens.get(u.id) ?? (await createSession(u.id, role)).token;
   tokens.set(u.id, t);
   jar.clear();

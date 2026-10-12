@@ -26,7 +26,14 @@ const schema = z
     /** Lets `next start` use dev providers on a laptop. Never set in real production. */
     ALLOW_DEV_PROVIDERS: bool,
 
-    SMS_PROVIDER: z.enum(['dev', 'msg91']).default('dev'),
+    /**
+     * How patients (and staff) sign in. `phone`: mobile number + a code sent by SMS. `email`: email address + a
+     * code sent by email, for use while SMS (DLT) approval is pending. The identity differs, so pick one per deployment.
+     */
+    LOGIN_METHOD: z.enum(['phone', 'email']).default('phone'),
+
+    /** dev: the code is shown on screen (never allowed in production). off: no SMS at all (booking messages are skipped). */
+    SMS_PROVIDER: z.enum(['dev', 'msg91', 'off']).default('dev'),
     MSG91_AUTH_KEY: z.string().optional(),
     /** DLT-registered OTP template id in MSG91. */
     MSG91_OTP_TEMPLATE_ID: z.string().optional(),
@@ -36,6 +43,13 @@ const schema = z
     MSG91_TEMPLATE_REPORT_READY: z.string().optional(),
 
     /** none: online payment is switched off and patients pay at collection. Allowed in production. */
+    /** Login codes by email. dev: shown on screen (never allowed in production). */
+    EMAIL_PROVIDER: z.enum(['dev', 'resend', 'brevo']).default('dev'),
+    /** e.g. `Amma Labs <login@yourdomain.in>`. The address must be one the provider has verified for you. */
+    EMAIL_FROM: z.string().optional(),
+    RESEND_API_KEY: z.string().optional(),
+    BREVO_API_KEY: z.string().optional(),
+
     PAYMENT_PROVIDER: z.enum(['mock', 'razorpay', 'none']).default('mock'),
     RAZORPAY_KEY_ID: z.string().optional(),
     RAZORPAY_KEY_SECRET: z.string().optional(),
@@ -63,13 +77,23 @@ const schema = z
     const need = (cond: boolean, path: string, message: string) => cond || ctx.addIssue({ code: 'custom', path: [path], message });
     const prod = e.NODE_ENV === 'production' && !e.ALLOW_DEV_PROVIDERS;
     if (prod) {
-      need(e.SMS_PROVIDER !== 'dev', 'SMS_PROVIDER', 'the dev SMS provider would show OTPs on screen; not allowed in production');
+      need(e.SMS_PROVIDER !== 'dev', 'SMS_PROVIDER', 'the dev SMS provider would show OTPs on screen and send nothing; use msg91, or off for no SMS (not allowed in production)');
+      need(e.LOGIN_METHOD !== 'email' || e.EMAIL_PROVIDER !== 'dev', 'EMAIL_PROVIDER', 'the dev email provider would show login codes on screen; not allowed in production');
       need(e.PAYMENT_PROVIDER !== 'mock', 'PAYMENT_PROVIDER', 'the mock payment provider is not allowed in production');
       need(e.STORAGE_DRIVER !== 'local', 'STORAGE_DRIVER', 'local disk storage is lost between deployments; use s3 in production');
       need(e.APP_URL.startsWith('https://'), 'APP_URL', 'must be https in production');
       need(e.CRON_SECRET !== undefined, 'CRON_SECRET', 'required in production for scheduled jobs');
       // Unset would silently put every visitor in one rate-limit bucket (behind a proxy) or trust spoofable headers (without one).
       need(process.env.TRUST_PROXY !== undefined, 'TRUST_PROXY', 'set it to true behind Vercel or a load balancer you control, false otherwise');
+    }
+    need(e.LOGIN_METHOD !== 'phone' || e.SMS_PROVIDER !== 'off', 'SMS_PROVIDER', 'LOGIN_METHOD=phone sends login codes by SMS, so SMS_PROVIDER cannot be off');
+    if (e.EMAIL_PROVIDER === 'resend') {
+      need(!!e.RESEND_API_KEY, 'RESEND_API_KEY', 'required when EMAIL_PROVIDER=resend');
+      need(!!e.EMAIL_FROM, 'EMAIL_FROM', 'required when EMAIL_PROVIDER=resend');
+    }
+    if (e.EMAIL_PROVIDER === 'brevo') {
+      need(!!e.BREVO_API_KEY, 'BREVO_API_KEY', 'required when EMAIL_PROVIDER=brevo');
+      need(!!e.EMAIL_FROM, 'EMAIL_FROM', 'required when EMAIL_PROVIDER=brevo');
     }
     if (e.SMS_PROVIDER === 'msg91') {
       need(!!e.MSG91_AUTH_KEY, 'MSG91_AUTH_KEY', 'required when SMS_PROVIDER=msg91');

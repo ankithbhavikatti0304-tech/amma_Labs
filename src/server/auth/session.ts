@@ -8,6 +8,8 @@ export interface SessionUser {
   id: string;
   name: string;
   phone: string;
+  /** Present when the person signs in by email. */
+  email?: string | null;
   role: Role;
 }
 
@@ -48,7 +50,7 @@ export async function findSession(token: string): Promise<SessionInfo | null> {
   if (now - s.lastSeenAt.getTime() > 5 * 60_000) {
     await db.session.update({ where: { id: s.id }, data: { lastSeenAt: new Date(now) } }).catch(() => undefined);
   }
-  return { sessionId: s.id, user: { id: s.user.id, name: s.user.name, phone: s.user.phone, role: s.user.role } };
+  return { sessionId: s.id, user: { id: s.user.id, name: s.user.name, phone: s.user.phone, email: s.user.email, role: s.user.role } };
 }
 
 export async function revokeSession(sessionId: string): Promise<void> {

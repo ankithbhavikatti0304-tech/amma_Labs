@@ -85,7 +85,7 @@ describe('verifyOtp', () => {
     const first = await verifyOtp({ phone: PHONE, code: sent[0]!.code, ipKey: 'ip1' });
     expect(first.created).toBe(true);
     expect(first.user).toMatchObject({ name: 'Lakshmi Rao', phone: PHONE, role: 'PATIENT' });
-    const u = await db.user.findUniqueOrThrow({ where: { phone: PHONE } });
+    const u = await db.user.findFirstOrThrow({ where: { phone: PHONE } });
     expect(u.consentAt).toBeTruthy();
     expect(u.consentVersion).toBeTruthy();
 
@@ -179,7 +179,7 @@ describe('sessions', () => {
 
   it('a demoted or disabled user loses access immediately', async () => {
     const { token } = await login();
-    await db.user.update({ where: { phone: PHONE }, data: { active: false } });
+    await db.user.updateMany({ where: { phone: PHONE }, data: { active: false } });
     expect(await findSession(token)).toBeNull();
   });
 });

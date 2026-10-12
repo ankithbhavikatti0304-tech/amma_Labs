@@ -20,3 +20,5 @@ export function safeEqual(a: string, b: string): boolean {
 
 /** A 6-digit code is only ~20 bits, so the hash is keyed and the real defences are expiry and the attempt cap. */
 export const hashOtp = (phone: string, code: string): string => hmac('otp', `${phone}:${code}`);
+/** Email codes are keyed differently, so a code for a phone can never be replayed against an email or the reverse. */
+export const hashEmailOtp = (email: string, code: string): string => hmac('otp-email', `${email}:${code}`);

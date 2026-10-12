@@ -1,6 +1,6 @@
 # Amma Labs
 
-A blood-test lab's web app: patients log in with their phone, book tests with home sample collection, pay at collection or online, track the order, and read their report online. Lab staff collect samples, enter results and release reports; admins run the catalogue, prices and coupons.
+A blood-test lab's web app: patients log in with their phone (or, until SMS is approved, their email address), book tests with home sample collection, pay at collection or online, track the order, and read their report online. Lab staff collect samples, enter results and release reports; admins run the catalogue, prices and coupons.
 
 > **Tested with a mother's care.**
 
@@ -20,7 +20,7 @@ cp .env.example .env                    # the defaults work for local developmen
 npm install
 npm run db:deploy                       # create the tables
 npm run db:seed                         # load the catalogue from the prototype (safe to re-run, never overwrites edits)
-npm run staff:add -- --phone 9876543210 --name "Your Name" --role ADMIN
+npm run staff:add -- --phone 9876543210 --name "Your Name" --role ADMIN   # add --email you@example.com when LOGIN_METHOD=email
 npm run dev                             # http://localhost:3000
 ```
 
@@ -37,7 +37,7 @@ Log in with the phone number you gave `staff:add`. In development the one-time c
 | `npm run e2e` | Browser tests against the production build (build first). Includes accessibility scans |
 | `npm run db:migrate` | Create a migration after editing `prisma/schema.prisma` |
 | `npm run db:deploy` | Apply migrations (what production runs) |
-| `npm run staff:add -- --phone … --name … --role …` | Create or promote a staff account |
+| `npm run staff:add -- [--email …] --phone … --name … --role …` | Create or promote a staff account (`--email` when the site signs in by email) |
 
 ---
 
@@ -74,7 +74,7 @@ e2e/  test/         Browser tests · test helpers
 
 What is built, so a reviewer can check it rather than trust it:
 
-- **Login:** phone + 6-digit OTP. Codes expire in 5 minutes, are stored only as a keyed hash, allow 5 attempts, one resend per 30 seconds, 5 per hour per number, 20 per hour per network address, and a site-wide hourly ceiling (SMS-pumping protection). Same response whether or not a number has an account.
+- **Login:** mobile number + 6-digit code by SMS (`LOGIN_METHOD=phone`, the default), or email address + 6-digit code by email (`LOGIN_METHOD=email`). Pick one per site: the identity differs (the phone number, or the email), and the other method's endpoints answer 404. Codes expire in 5 minutes, are stored only as a keyed hash, allow 5 attempts, one resend per 30 seconds, 5 per hour per number or address, 20 per hour per network address, and a site-wide hourly ceiling (SMS-pumping and email-bombing protection). Same response whether or not an account exists. With email sign-in the mobile number typed on the form is only a contact number for the pickup call: it is never used to find an account, and two people (say a mother and son) may share one.
 - **Sessions:** random token in an `httpOnly`, `SameSite=Lax`, `Secure` (`__Host-` prefixed in production) cookie. Only a SHA-256 of the token is stored, so a database leak yields no usable sessions, and sessions can be revoked. Staff sessions are shorter (4 h idle, 12 h max). Disabling or re-roling someone ends their sessions at once.
 - **Authorization checked in the server code of every endpoint and page**, not just in the UI or middleware: patients see only their own orders and reports (someone else's order looks exactly like a missing one); staff APIs are role-gated; a test matrix covers every staff and admin endpoint against every role.
 - **CSRF:** `SameSite` cookies plus an `Origin` / `Sec-Fetch-Site` check on every state-changing request.
@@ -82,7 +82,7 @@ What is built, so a reviewer can check it rather than trust it:
 - **Input:** every API validates with Zod; all database access goes through Prisma (parameterised). Uploads are judged by their bytes, not their name (JPEG/PNG/WebP/PDF, 5 MB), stored in private storage and served only through an authenticated route as a locked-down attachment.
 - **Payments:** the gateway amount comes from the order row; checkout and webhook signatures are verified in constant time; webhooks are idempotent; an amount mismatch is never confirmed; money arriving for a lapsed order is recorded so staff can refund it.
 - **Health data (DPDP Act 2023):** consent captured at first login (versioned, not pre-ticked); privacy notice; the patient can see, correct, export and request deletion of their data; every open or download of a report, and every result entry and release, is written to an audit log that **never stores result values, OTPs or phone numbers**. Logs redact sensitive fields, and database error text is cut to its first line because Prisma echoes submitted data after it.
-- **Config safety:** the environment is validated at boot. Production refuses the dev SMS provider (it would show codes on screen), the mock payment provider, local disk storage, an `http` site URL, a missing cron secret, and an unset `TRUST_PROXY`.
+- **Config safety:** the environment is validated at boot. Production refuses the dev SMS and email providers (they would show codes on screen), the mock payment provider, local disk storage, an `http` site URL, a missing cron secret, and an unset `TRUST_PROXY`.
 - **Accessibility:** axe (WCAG 2.1 A/AA) runs in the browser tests on the storefront, report, staff and admin pages, in light and dark themes.
 
 Known gaps and judgement calls are listed at the end of this file and in `docs/LAUNCH-CHECKLIST.md`.
@@ -96,7 +96,7 @@ The suggested setup is **Vercel + a managed Postgres (Supabase or Neon)** and an
 0. **Build.** Vercel runs `npm run vercel-build`, which applies pending database migrations on **production** deploys only (never on previews), then builds. The catalogue seed and the first admin are still one-off commands from your computer (step 1).
 1. **Database.** Create a Postgres. Set `DATABASE_URL` to the *pooled* connection string and `DIRECT_URL` to the direct one. **On Supabase:** Vercel only speaks IPv4, so skip the `db.<ref>.supabase.co` host. Use the shared pooler: *Connect* in the Supabase dashboard → transaction mode (port 6543) for `DATABASE_URL`, session mode (port 5432) for `DIRECT_URL`. All tables have row-level security switched on with no policies, so the public Data API cannot read anything; the app connects as the database owner. Also turn the Data API off (Settings → API) since the app does not use it. After deploy, run `npm run db:deploy` against production (CI step or a one-off), then `npm run db:seed`, then `npm run staff:add` for the first admin.
 2. **Environment.** Set everything in `.env.example` that is marked required for production. `APP_URL` must be `https://…`; set `TRUST_PROXY=true` on Vercel.
-3. **SMS.** Register a DLT sender and an OTP template with MSG91 (Indian SMS requires it); set `SMS_PROVIDER=msg91` and the keys. Optional booking-message templates are listed in `src/server/notify.ts`.
+3. **Login codes.** Either **SMS**: register a DLT sender and an OTP template with MSG91 (Indian SMS requires it, and approval takes days); set `SMS_PROVIDER=msg91` and the keys. Optional booking-message templates are listed in `src/server/notify.ts`. Or **email** while that is pending: set `LOGIN_METHOD=email`, `SMS_PROVIDER=off`, and an email provider: `EMAIL_PROVIDER=resend` (needs a domain you own, verified in Resend) or `brevo` (a verified sender address), with its API key and `EMAIL_FROM="Amma Labs <login@your-domain>"`. Sent from a free-mail address (gmail.com and similar) mail often lands in spam, so use your own domain when you can. Email sign-in sends no booking messages yet; patients follow their order on the site.
 4. **Payments.** To launch without online payment, set `PAYMENT_PROVIDER=none`: checkout then offers only *Pay at collection*, the server refuses online orders, and no gateway keys are needed. When you are ready for online payment, create Razorpay keys, enable auto-capture, and add a webhook to `https://YOUR-SITE/api/webhooks/razorpay` for `payment.captured`, `order.paid` and `payment.failed`. Set `PAYMENT_PROVIDER=razorpay`.
 5. **Storage.** Vercel has no persistent disk, so uploads and report PDFs need a bucket. Create a private one (block all public access); set `STORAGE_DRIVER=s3` and the `S3_*` keys. Cloudflare R2 works (set `S3_ENDPOINT=https://<account>.r2.cloudflarestorage.com`, `S3_REGION=auto`, `S3_SERVER_SIDE_ENCRYPTION=none`, `S3_FORCE_PATH_STYLE=true`; R2 encrypts at rest by itself and rejects the AWS encryption header) and so does AWS S3 in `ap-south-1`.
 6. **Scheduled job.** `vercel.json` calls `/api/cron/maintenance` once a day (retries failed messages, releases unpaid slot holds, clears expired sessions and counters), which is the most Vercel's free Hobby plan allows (a more frequent schedule makes the deploy fail there). Set `CRON_SECRET`; Vercel sends it automatically. The 15-minute payment hold still works because slot availability is computed live, the job only tidies up. On a paid plan, change the schedule to `*/15 * * * *` so failed messages are retried within minutes.

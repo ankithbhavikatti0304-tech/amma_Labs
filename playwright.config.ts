@@ -38,7 +38,10 @@ export default defineConfig({
       APP_URL: `http://localhost:${PORT}`,
       APP_SECRET: 'e2e-secret-e2e-secret-e2e-secret-0123456789',
       ALLOW_DEV_PROVIDERS: 'true',
+      // E2E_LOGIN_METHOD=email runs the site in email sign-in mode (see e2e/email-login.spec.ts).
+      LOGIN_METHOD: process.env.E2E_LOGIN_METHOD ?? 'phone',
       SMS_PROVIDER: 'dev',
+      EMAIL_PROVIDER: 'dev',
       PAYMENT_PROVIDER: 'mock',
       STORAGE_DRIVER: 'local',
       LOCAL_STORAGE_DIR: '.storage-e2e',

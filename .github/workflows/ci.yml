@@ -48,6 +48,10 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
+      # The same site, signing in by email instead of by phone.
+      - run: npx playwright test e2e/email-login.spec.ts --project=desktop
+        env:
+          E2E_LOGIN_METHOD: email
       - name: Keep traces if the browser tests failed
         if: failure()
         uses: actions/upload-artifact@v4

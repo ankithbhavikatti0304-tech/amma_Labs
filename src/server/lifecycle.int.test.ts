@@ -193,9 +193,10 @@ describe('privacy of reports', () => {
     await getReport(patient, o.code);
     await getReportPdf(patient, o.code);
     await getReport(admin, o.code);
-    const logs = await db.auditLog.findMany({ where: { action: { in: ['report.view', 'report.download'] } }, orderBy: { at: 'asc' } });
+    const logs = await db.auditLog.findMany({ where: { action: { in: ['report.view', 'report.download'] } }, orderBy: [{ at: 'asc' }, { id: 'asc' }] });
     expect(logs.map((l) => [l.action, l.actorId])).toEqual([['report.view', patient.id], ['report.download', patient.id], ['report.view', admin.id]]);
-    expect(JSON.stringify(logs)).not.toMatch(/112|8\.6|2\.1/);
+    // Only what was recorded about the event: random ids can contain any digits, so don't search them.
+    expect(JSON.stringify(logs.map((l) => l.meta))).not.toMatch(/112|8\.6|2\.1/);
   });
 
   it('audit entries for results record counts only', async () => {

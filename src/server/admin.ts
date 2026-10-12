@@ -6,6 +6,7 @@ import { ApiError } from './http-errors';
 import { invalidateCatalogue } from './catalogue';
 import { revokeAllSessions } from './auth/session';
 import { slugify } from '@/lib/slug';
+import { env } from './env';
 import { LAB_DEFAULTS, type LabSettings } from '@/config/lab';
 import type { Prisma } from '@/generated/prisma/client';
 import type { Role, CallbackStatus, PrescriptionStatus, Gender } from '@/generated/prisma/enums';
@@ -186,15 +187,22 @@ async function otherActiveAdmins(exceptId: string) {
   return db.user.count({ where: { role: 'ADMIN', active: true, NOT: { id: exceptId } } });
 }
 
-/** Add a staff member by phone, or change an existing person's role. They log in with the same OTP flow. */
-export async function upsertStaff(admin: SessionUser, input: { phone: string; name: string; role: Role }): Promise<{ id: string }> {
-  const existing = await db.user.findUnique({ where: { phone: input.phone } });
+/**
+ * Add a staff member, or change an existing person's role. They log in with the same code flow as patients:
+ * found by mobile number when LOGIN_METHOD=phone, by email address when it is `email` (the mobile is then a contact number).
+ */
+export async function upsertStaff(admin: SessionUser, input: { phone: string; email?: string | undefined; name: string; role: Role }): Promise<{ id: string }> {
+  const byEmail = env().LOGIN_METHOD === 'email';
+  if (byEmail && !input.email) throw new ApiError(400, 'invalid_input', 'Enter their email address.', { fields: { email: 'Enter their email address.' } });
+  const existing = byEmail
+    ? await db.user.findUnique({ where: { email: input.email! } })
+    : await db.user.findFirst({ where: { phone: input.phone, email: null }, orderBy: { createdAt: 'asc' } });
   if (existing && existing.role === 'ADMIN' && input.role !== 'ADMIN' && (await otherActiveAdmins(existing.id)) === 0) {
     throw new ApiError(409, 'last_admin', 'There must always be at least one active admin.');
   }
   const user = existing
     ? await db.user.update({ where: { id: existing.id }, data: { role: input.role, active: true } })
-    : await db.user.create({ data: { phone: input.phone, name: input.name, role: input.role } });
+    : await db.user.create({ data: { phone: input.phone, ...(byEmail ? { email: input.email! } : {}), name: input.name, role: input.role } });
   // Session lifetimes depend on role, so make them sign in again.
   if (existing && existing.role !== input.role) await revokeAllSessions(user.id);
   await audit(null, { actorId: admin.id, action: existing ? 'staff.role' : 'staff.create', entity: 'User', entityId: user.id, meta: { role: input.role } });

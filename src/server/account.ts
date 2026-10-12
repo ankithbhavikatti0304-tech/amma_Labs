@@ -32,7 +32,7 @@ export async function removeAddress(userId: string, id: string): Promise<void> {
 /** Everything we hold about this person, in one file they can keep (DPDP: right to access). */
 export async function exportMyData(userId: string) {
   const [user, patients, addresses, orders, prescriptions] = await Promise.all([
-    db.user.findUniqueOrThrow({ where: { id: userId }, select: { name: true, phone: true, consentAt: true, consentVersion: true, createdAt: true } }),
+    db.user.findUniqueOrThrow({ where: { id: userId }, select: { name: true, phone: true, email: true, consentAt: true, consentVersion: true, createdAt: true } }),
     db.patient.findMany({ where: { userId, deletedAt: null }, select: { name: true, age: true, gender: true } }),
     db.address.findMany({ where: { userId, deletedAt: null }, select: { line: true, pincode: true, city: true } }),
     db.order.findMany({

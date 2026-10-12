@@ -1,6 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
-import { phoneSchema, personName } from './schemas';
+import { phoneSchema, personName, emailSchema } from './schemas';
 import { M } from '@/components/character/builders';
 
 // A blank required number must be an error, not a silent 0 (z.coerce.number() turns '' into 0).
@@ -78,7 +78,8 @@ export const couponCreateSchema = couponBase.extend({ code: z.string().trim().to
 
 export const slotSchema = z.object({ label: text(2, 30), capacity: int(0, 500), active: z.boolean(), morning: z.boolean() });
 
-export const staffSchema = z.object({ phone: phoneSchema, name: personName, role: z.enum(['PHLEBOTOMIST', 'TECHNICIAN', 'PATHOLOGIST', 'ADMIN']) });
+/** `email` is only used (and then required) when the site signs in by email; an empty box counts as none. */
+export const staffSchema = z.object({ phone: phoneSchema, email: z.union([z.literal('').transform(() => undefined), emailSchema]).optional(), name: personName, role: z.enum(['PHLEBOTOMIST', 'TECHNICIAN', 'PATHOLOGIST', 'ADMIN']) });
 export const activeSchema = z.object({ active: z.boolean() });
 
 export const callbackSchema = z.object({ status: z.enum(['NEW', 'CONTACTED', 'CLOSED']), note: nullableText(300) });

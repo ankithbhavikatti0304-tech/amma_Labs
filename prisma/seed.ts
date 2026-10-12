@@ -130,11 +130,9 @@ async function main() {
   const adminPhone = process.env.SEED_ADMIN_PHONE;
   if (adminPhone) {
     if (!/^[6-9]\d{9}$/.test(adminPhone)) throw new Error('SEED_ADMIN_PHONE must be a 10-digit Indian mobile number');
-    await db.user.upsert({
-      where: { phone: adminPhone },
-      create: { phone: adminPhone, name: process.env.SEED_ADMIN_NAME ?? 'Admin', role: 'ADMIN' },
-      update: { role: 'ADMIN', active: true },
-    });
+    const found = await db.user.findFirst({ where: { phone: adminPhone, email: null }, orderBy: { createdAt: 'asc' } });
+    if (found) await db.user.update({ where: { id: found.id }, data: { role: 'ADMIN', active: true } });
+    else await db.user.create({ data: { phone: adminPhone, name: process.env.SEED_ADMIN_NAME ?? 'Admin', role: 'ADMIN' } });
     console.log(`Admin ready for ${adminPhone.slice(0, 2)}••••${adminPhone.slice(-4)}`);
   }
 

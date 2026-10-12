@@ -9,12 +9,14 @@ interface AppValue extends CatalogueData {
   byId: Map<string, TestDTO>;
   user: SessionUser | null;
   city: string;
+  /** How people sign in on this site: by mobile number + SMS code, or by email address + emailed code. */
+  loginMethod: 'phone' | 'email';
 }
 
 const Ctx = createContext<AppValue | null>(null);
 
-export function AppProviders({ data, user, city, children }: { data: CatalogueData; user: SessionUser | null; city: string; children: ReactNode }) {
-  const value = useMemo<AppValue>(() => ({ ...data, byId: new Map(data.tests.map((t) => [t.id, t])), user, city }), [data, user, city]);
+export function AppProviders({ data, user, city, loginMethod, children }: { data: CatalogueData; user: SessionUser | null; city: string; loginMethod: 'phone' | 'email'; children: ReactNode }) {
+  const value = useMemo<AppValue>(() => ({ ...data, byId: new Map(data.tests.map((t) => [t.id, t])), user, city, loginMethod }), [data, user, city, loginMethod]);
   // A retired test must not linger in someone's saved cart.
   useEffect(() => cart.prune(new Set(data.tests.map((t) => t.id))), [data.tests]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

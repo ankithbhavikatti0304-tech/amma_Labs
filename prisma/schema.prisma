@@ -93,8 +93,11 @@ enum NotificationStatus {
 
 model User {
   id             String    @id @default(cuid())
-  /// 10-digit Indian mobile number, without +91.
-  phone          String    @unique
+  /// 10-digit Indian mobile number, without +91. The login identity when LOGIN_METHOD=phone; just a contact
+  /// number (for the pickup call) when LOGIN_METHOD=email, where two people may share one phone, so not unique.
+  phone          String
+  /// The login identity when LOGIN_METHOD=email. Stored lower-case.
+  email          String?   @unique
   name           String
   role           Role      @default(PATIENT)
   active         Boolean   @default(true)
@@ -114,6 +117,7 @@ model User {
   assignedOrders Order[]       @relation("OrderPhlebotomist")
 
   @@index([role])
+  @@index([phone])
 }
 
 /// Server-side session. The cookie holds a random token; only its SHA-256 is stored here,
@@ -135,7 +139,10 @@ model Session {
 
 model OtpRequest {
   id         String    @id @default(cuid())
+  /// Login phone (LOGIN_METHOD=phone), or the contact phone typed at sign-up (LOGIN_METHOD=email).
   phone      String
+  /// Set when the code was emailed (LOGIN_METHOD=email). Lower-case.
+  email      String?
   /// HMAC-SHA256(secret, phone:code). Never the code itself.
   codeHash   String
   /// Name typed on the login form. Only used if this phone has no account yet.
@@ -146,6 +153,7 @@ model OtpRequest {
   createdAt  DateTime  @default(now())
 
   @@index([phone, createdAt])
+  @@index([email, createdAt])
 }
 
 /// Fixed-window counters used for rate limiting. Lives in Postgres so limits hold across

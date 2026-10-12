@@ -18,7 +18,7 @@ export default function Privacy() {
 
         <h2 style={{ fontSize: 19 }}>What we collect</h2>
         <ul style={{ margin: 0, paddingLeft: 20, display: 'grid', gap: 4 }}>
-          <li>Your name and mobile number, to create your account and send the login code.</li>
+          <li>Your name and mobile number, and your email address if you sign in with email, to create your account and send the login code.</li>
           <li>For each person tested: name, age and gender. Gender and age decide which reference range is used on the report.</li>
           <li>Your address and pincode, so we can collect the sample at home.</li>
           <li>The tests you order, the slot you choose, and how you pay. We never see your card or UPI PIN; payments are handled by our payment partner.</li>
@@ -29,7 +29,7 @@ export default function Privacy() {
         <p>To book and collect your sample, run your tests, give you the report, tell you about your booking by SMS or WhatsApp, take payment, and answer your calls. We do not sell your information and we do not use your results for advertising.</p>
 
         <h2 style={{ fontSize: 19 }}>Who can see it</h2>
-        <p>Only our staff who need it for your order: the person collecting your sample, the lab team, and the pathologist who checks your report. Our service providers (SMS, WhatsApp, payments and hosting) handle only what they need to do their job. We share your report with a doctor only if you choose to share it.</p>
+        <p>Only our staff who need it for your order: the person collecting your sample, the lab team, and the pathologist who checks your report. Our service providers (SMS, email, WhatsApp, payments and hosting) handle only what they need to do their job. We share your report with a doctor only if you choose to share it.</p>
 
         <h2 style={{ fontSize: 19 }}>How we protect it</h2>
         <p>Connections are encrypted. Login codes expire in 5 minutes and are stored only as a one-way hash. Reports and prescriptions are kept in private storage and are only opened through a link that checks it is you. We record who opened or changed a report.</p>

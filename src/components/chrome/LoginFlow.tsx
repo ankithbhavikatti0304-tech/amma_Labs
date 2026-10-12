@@ -3,15 +3,22 @@ import { useEffect, useRef, useState } from 'react';
 import { ApiFailure, apiPost } from '@/lib/client/api';
 import { isValidPhone, normalizePhone, formatPhone } from '@/lib/phone';
 import { SheetHead } from './Modal';
+import { useApp } from '@/components/providers';
 import type { SessionUser } from '@/server/auth/session';
 
 type Step = 'details' | 'otp';
 
-/** Phone + OTP login. Used in the login sheet and on /login. */
+/** A light check so obvious typos are caught before a round trip; the server checks properly. */
+const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/** Phone + SMS code, or email + emailed code, depending on the site's LOGIN_METHOD. Used in the login sheet and on /login. */
 export function LoginFlow({ onSuccess, onClose }: { onSuccess: (user: SessionUser) => void; onClose?: () => void }) {
+  const { loginMethod } = useApp();
+  const byEmail = loginMethod === 'email';
   const [step, setStep] = useState<Step>('details');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [mail, setMail] = useState('');
   const [consent, setConsent] = useState(false);
   const [errs, setErrs] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -32,15 +39,19 @@ export function LoginFlow({ onSuccess, onClose }: { onSuccess: (user: SessionUse
   async function send(e?: React.FormEvent) {
     e?.preventDefault();
     const ph = normalizePhone(phone);
+    const em = mail.trim().toLowerCase();
     const next: Record<string, string> = {};
     if (name.trim().length < 2) next.name = 'Enter your name as it should appear on the report.';
+    if (byEmail && !EMAIL_OK.test(em)) next.email = 'Enter a valid email address, like name@example.com.';
     if (!isValidPhone(ph)) next.phone = 'Enter a 10-digit Indian mobile number starting with 6, 7, 8 or 9.';
     if (!consent) next.consent = 'Please agree to continue.';
     setErrs(next);
     if (Object.keys(next).length) return;
     setBusy(true);
     try {
-      const r = await apiPost<{ resendAfter: number; devCode?: string }>('/api/auth/otp/send', { phone: ph, name: name.trim(), consent });
+      const r = byEmail
+        ? await apiPost<{ resendAfter: number; devCode?: string }>('/api/auth/email/send', { email: em, phone: ph, name: name.trim(), consent })
+        : await apiPost<{ resendAfter: number; devCode?: string }>('/api/auth/otp/send', { phone: ph, name: name.trim(), consent });
       setDevCode(r.devCode ?? null);
       setLeft(r.resendAfter);
       setDigits(Array(6).fill(''));
@@ -62,7 +73,9 @@ export function LoginFlow({ onSuccess, onClose }: { onSuccess: (user: SessionUse
     verifying.current = true;
     setBusy(true);
     try {
-      const r = await apiPost<{ user: SessionUser }>('/api/auth/otp/verify', { phone: normalizePhone(phone), code });
+      const r = byEmail
+        ? await apiPost<{ user: SessionUser }>('/api/auth/email/verify', { email: mail.trim().toLowerCase(), code })
+        : await apiPost<{ user: SessionUser }>('/api/auth/otp/verify', { phone: normalizePhone(phone), code });
       onSuccess(r.user);
     } catch (err) {
       setErrs({ otp: err instanceof ApiFailure ? err.message : 'Something went wrong. Please try again.' });
@@ -101,15 +114,22 @@ export function LoginFlow({ onSuccess, onClose }: { onSuccess: (user: SessionUse
   if (step === 'details') {
     return (
       <>
-        {onClose ? <SheetHead title="Log in" sub="Use your mobile number. We will send a 6-digit code." onClose={onClose} /> : <p className="muted" style={{ marginBottom: 14 }}>Use your mobile number. We will send a 6-digit code.</p>}
+        {onClose ? <SheetHead title="Log in" sub={byEmail ? 'Use your email address. We will send you a 6-digit code.' : 'Use your mobile number. We will send a 6-digit code.'} onClose={onClose} /> : <p className="muted" style={{ marginBottom: 14 }}>{byEmail ? 'Use your email address. We will send you a 6-digit code.' : 'Use your mobile number. We will send a 6-digit code.'}</p>}
         <form className="stack" style={{ gap: 14 }} onSubmit={send} noValidate>
           <div className="field">
             <label htmlFor="lName">Your name</label>
             <input id="lName" autoComplete="name" placeholder="e.g. Lakshmi Rao" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} aria-invalid={!!errs.name} aria-describedby="lNameE" />
             <span className="err" id="lNameE" role="alert">{errs.name}</span>
           </div>
+          {byEmail ? (
+            <div className="field">
+              <label htmlFor="lEmail">Email address</label>
+              <input id="lEmail" type="email" inputMode="email" autoComplete="email" placeholder="name@example.com" value={mail} onChange={(e) => setMail(e.target.value)} maxLength={254} aria-invalid={!!errs.email} aria-describedby="lEmailE" />
+              <span className="err" id="lEmailE" role="alert">{errs.email}</span>
+            </div>
+          ) : null}
           <div className="field">
-            <label htmlFor="lPhone">Mobile number</label>
+            <label htmlFor="lPhone">{byEmail ? 'Mobile number (for the pickup call)' : 'Mobile number'}</label>
             <div className="phone-in">
               <span>+91</span>
               <input id="lPhone" inputMode="numeric" autoComplete="tel-national" maxLength={14} placeholder="98765 43210" value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={!!errs.phone} aria-describedby="lPhoneE" />
@@ -119,12 +139,12 @@ export function LoginFlow({ onSuccess, onClose }: { onSuccess: (user: SessionUse
           <label className="check" style={{ padding: '10px 12px' }}>
             <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} aria-describedby="lConsentE" />
             <span style={{ fontSize: 13 }}>
-              I agree to the <a href="/privacy" target="_blank" rel="noopener">privacy notice</a> and to get booking updates by SMS and WhatsApp.
+              I agree to the <a href="/privacy" target="_blank" rel="noopener">privacy notice</a>{byEmail ? ' and to be contacted on this number about my booking.' : ' and to get booking updates by SMS and WhatsApp.'}
             </span>
           </label>
           <span className="err" id="lConsentE" role="alert">{errs.consent}</span>
           {errs.form ? <div className="note" role="alert">{errs.form}</div> : null}
-          <button className="btn block" type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send OTP'}</button>
+          <button className="btn block" type="submit" disabled={busy}>{busy ? 'Sending…' : byEmail ? 'Email me a code' : 'Send OTP'}</button>
         </form>
       </>
     );
@@ -135,11 +155,11 @@ export function LoginFlow({ onSuccess, onClose }: { onSuccess: (user: SessionUse
       {onClose ? (
         <SheetHead
           title="Enter OTP"
-          sub={<>Sent to +91 {formatPhone(ph)} · <button type="button" className="link" onClick={() => { setStep('details'); setErrs({}); }}>Change</button></>}
+          sub={<>{byEmail ? <>Emailed to {mail.trim().toLowerCase()}</> : <>Sent to +91 {formatPhone(ph)}</>} · <button type="button" className="link" onClick={() => { setStep('details'); setErrs({}); }}>Change</button></>}
           onClose={onClose}
         />
       ) : (
-        <p className="muted" style={{ marginBottom: 14 }}>Sent to +91 {formatPhone(ph)} · <button type="button" className="link" onClick={() => setStep('details')}>Change</button></p>
+        <p className="muted" style={{ marginBottom: 14 }}>{byEmail ? <>Emailed to {mail.trim().toLowerCase()}</> : <>Sent to +91 {formatPhone(ph)}</>} · <button type="button" className="link" onClick={() => setStep('details')}>Change</button></p>
       )}
       <form className="stack" style={{ gap: 14 }} onSubmit={(e) => { e.preventDefault(); if (digits.every(Boolean)) void verify(digits.join('')); else setErrs({ otp: 'Enter all 6 digits.' }); }} noValidate>
         <div className={`otp${shake ? ' shake' : ''}`} onPaste={onPaste}>
@@ -158,10 +178,11 @@ export function LoginFlow({ onSuccess, onClose }: { onSuccess: (user: SessionUse
           ))}
         </div>
         <span className="err" role="alert">{errs.otp}</span>
-        {devCode ? <div className="demo">Demo mode: SMS is not connected yet. Your code is <b>{devCode}</b></div> : null}
+        {devCode ? <div className="demo">Demo mode: {byEmail ? 'email' : 'SMS'} is not connected yet. Your code is <b>{devCode}</b></div> : null}
+        {byEmail && !devCode ? <p className="muted" style={{ margin: 0, fontSize: 13.5 }}>Check your inbox, and your spam folder if it is not there within a minute.</p> : null}
         <button className="btn block" type="submit" disabled={busy}>{busy ? 'Checking…' : 'Verify and continue'}</button>
         <p className="muted" style={{ margin: 0, fontSize: 13.5, textAlign: 'center' }}>
-          {left > 0 ? `Resend code in 0:${String(left).padStart(2, '0')}` : <>Didn&apos;t get it? <button type="button" className="link" onClick={() => void send()}>Resend OTP</button></>}
+          {left > 0 ? `Resend code in 0:${String(left).padStart(2, '0')}` : <>Didn&apos;t get it? <button type="button" className="link" onClick={() => void send()}>{byEmail ? 'Resend code' : 'Resend OTP'}</button></>}
         </p>
       </form>
     </>

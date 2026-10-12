@@ -17,8 +17,19 @@ export const personName = z
   .max(80)
   .regex(/^[\p{L}\p{M}][\p{L}\p{M} .'’-]*$/u, 'Use letters only.');
 
+/** An email address, trimmed and lower-cased (so Lakshmi@Gmail.com and lakshmi@gmail.com are one person). */
+export const emailSchema = z
+  .string()
+  .trim()
+  .max(254)
+  .toLowerCase()
+  .pipe(z.email('Enter a valid email address, like name@example.com.'));
+
 export const sendOtpSchema = z.object({ phone: phoneSchema, name: personName, consent: z.boolean() });
 export const verifyOtpSchema = z.object({ phone: phoneSchema, code: z.string().regex(/^\d{6}$/, 'Enter all 6 digits.') });
+/** Email login: the mobile number is a contact number for the pickup call, not the identity. */
+export const sendEmailOtpSchema = z.object({ email: emailSchema, phone: phoneSchema, name: personName, consent: z.boolean() });
+export const verifyEmailOtpSchema = z.object({ email: emailSchema, code: z.string().regex(/^\d{6}$/, 'Enter all 6 digits.') });
 
 import { CITIES } from '@/config/lab';
 import { isIsoDate } from '@/lib/ist';

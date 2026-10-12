@@ -92,12 +92,17 @@ export async function verifyOtp({ phone, code, ipKey, userAgent }: VerifyOtpInpu
   const burned = await db.otpRequest.updateMany({ where: { id: req.id, consumedAt: null }, data: { consumedAt: now } });
   if (burned.count === 0) throw NO_CODE;
 
-  const existing = await db.user.findUnique({ where: { phone } });
-  if (existing && !existing.active) throw new ApiError(403, 'account_disabled', 'This account is disabled. Please call us.');
-
-  const user = existing
-    ? await db.user.update({ where: { id: existing.id }, data: { lastLoginAt: now, ...(existing.consentAt ? {} : { consentAt: now, consentVersion: CONSENT_VERSION }) } })
-    : await db.user.create({ data: { phone, name: (req.name ?? 'Patient').trim() || 'Patient', consentAt: now, consentVersion: CONSENT_VERSION, lastLoginAt: now } });
+  // The phone is the identity here, but the database no longer enforces one account per number (email sign-in
+  // shares phones). So find-or-create runs under a per-number lock: two first-time logins can't both create one.
+  const { user, existing } = await db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT 1 AS ok FROM (SELECT pg_advisory_xact_lock(hashtext(${`user-phone:${phone}`}))) AS l`;
+    const found = await tx.user.findFirst({ where: { phone, email: null }, orderBy: { createdAt: 'asc' } });
+    if (found && !found.active) throw new ApiError(403, 'account_disabled', 'This account is disabled. Please call us.');
+    const u = found
+      ? await tx.user.update({ where: { id: found.id }, data: { lastLoginAt: now, ...(found.consentAt ? {} : { consentAt: now, consentVersion: CONSENT_VERSION }) } })
+      : await tx.user.create({ data: { phone, name: (req.name ?? 'Patient').trim() || 'Patient', consentAt: now, consentVersion: CONSENT_VERSION, lastLoginAt: now } });
+    return { user: u, existing: found };
+  });
 
   const { token, expiresAt } = await createSession(user.id, user.role, userAgent);
   return { user: { id: user.id, name: user.name, phone: user.phone, role: user.role }, token, expiresAt, created: !existing };

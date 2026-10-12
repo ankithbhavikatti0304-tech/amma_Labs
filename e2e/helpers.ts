@@ -33,7 +33,8 @@ export const db = () => new pg.Client({ connectionString: process.env.E2E_DATABA
 export async function upsertStaff(phone: string, name: string, role: string) {
   const c = db();
   await c.connect();
-  await c.query(`INSERT INTO "User"(id, phone, name, role, "updatedAt") VALUES (gen_random_uuid()::text, $1, $2, $3::"Role", now()) ON CONFLICT (phone) DO UPDATE SET role = $3::"Role", name = $2, active = true`, [phone, name, role]);
+  const updated = await c.query(`UPDATE "User" SET role = $3::"Role", name = $2, active = true WHERE phone = $1 AND email IS NULL`, [phone, name, role]);
+  if (updated.rowCount === 0) await c.query(`INSERT INTO "User"(id, phone, name, role, "updatedAt") VALUES (gen_random_uuid()::text, $1, $2, $3::"Role", now())`, [phone, name, role]);
   await c.end();
 }
 
