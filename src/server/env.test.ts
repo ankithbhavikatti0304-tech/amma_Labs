@@ -54,6 +54,13 @@ describe('environment validation', () => {
     expect(() => env()).toThrow(/RAZORPAY_KEY_ID/);
   });
 
+  it('encryption header defaults to AES256 and can be switched off for R2', () => {
+    setEnv({ ...prod });
+    expect(env().S3_SERVER_SIDE_ENCRYPTION).toBe('AES256');
+    setEnv({ ...prod, S3_SERVER_SIDE_ENCRYPTION: 'none' });
+    expect(env().S3_SERVER_SIDE_ENCRYPTION).toBe('none');
+  });
+
   it('development works with nothing but the basics', () => {
     setEnv({ ...base, NODE_ENV: 'development', APP_URL: 'http://localhost:3000' });
     expect(env()).toMatchObject({ SMS_PROVIDER: 'dev', PAYMENT_PROVIDER: 'mock', STORAGE_DRIVER: 'local' });

@@ -58,8 +58,10 @@ class S3Storage implements Storage {
   private bucket = env().S3_BUCKET!;
   async put(key: string, data: Buffer, contentType: string) {
     assertKey(key);
-    // Server-side encryption at rest; the bucket itself must have public access blocked.
-    await this.s3.send(new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: data, ContentType: contentType, ServerSideEncryption: 'AES256' }));
+    // Encryption at rest: asked of AWS S3 here; Cloudflare R2 always encrypts and rejects the header (S3_SERVER_SIDE_ENCRYPTION=none).
+    // Either way the bucket itself must have public access blocked.
+    const sse = env().S3_SERVER_SIDE_ENCRYPTION;
+    await this.s3.send(new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: data, ContentType: contentType, ...(sse === 'AES256' ? { ServerSideEncryption: 'AES256' as const } : {}) }));
   }
   async get(key: string) {
     assertKey(key);

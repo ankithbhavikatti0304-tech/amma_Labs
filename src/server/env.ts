@@ -49,6 +49,8 @@ const schema = z
     S3_ACCESS_KEY_ID: z.string().optional(),
     S3_SECRET_ACCESS_KEY: z.string().optional(),
     S3_FORCE_PATH_STYLE: bool,
+    /** Ask the bucket to encrypt at rest (AWS S3). Set to `none` for Cloudflare R2, which always encrypts and rejects the header. */
+    S3_SERVER_SIDE_ENCRYPTION: z.enum(['AES256', 'none']).default('AES256'),
 
     WHATSAPP_PROVIDER: z.enum(['off', 'cloud']).default('off'),
     WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
