@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { newPhone, sessionFor } from './helpers';
+import { newPhone, openSearch, sessionFor } from './helpers';
 
 /** Automated accessibility checks (WCAG 2.1 A and AA). They catch about a third of real problems; they do not replace trying it with a screen reader. */
 async function scan(page: import('@playwright/test').Page, label: string) {
@@ -32,8 +32,7 @@ test('a11y: the login sheet, the search palette and a signed-in checkout', async
   await expect(page.getByRole('dialog', { name: 'Log in' })).toBeVisible();
   await scan(page, 'login sheet');
   await page.keyboard.press('Escape');
-  await page.keyboard.press('/');
-  await page.getByRole('searchbox', { name: 'Search tests' }).fill('vit');
+  await (await openSearch(page)).fill('vit');
   await expect(page.locator('.pal-row').first()).toBeVisible();
   await scan(page, 'search palette');
 

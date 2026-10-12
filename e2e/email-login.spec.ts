@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expectAccessible, newPhone } from './helpers';
+import { expectAccessible, newPhone, openSearch } from './helpers';
 
 /** Only runs when the site is started in email sign-in mode: E2E_LOGIN_METHOD=email npx playwright test e2e/email-login.spec.ts */
 test.skip(process.env.E2E_LOGIN_METHOD !== 'email', 'needs the site in email sign-in mode');
@@ -55,8 +55,7 @@ test('the mobile-number sign-in endpoints are closed on an email site', async ({
 test('an email-signed-in patient can book a test and see it in their orders', async ({ page }) => {
   const email = uniqueEmail();
   await page.goto('/');
-  await page.keyboard.press('/');
-  await page.getByRole('searchbox', { name: 'Search tests' }).fill('thyroid');
+  await (await openSearch(page)).fill('thyroid');
   await page.locator('.pal-row').first().getByRole('button', { name: /^Add/ }).click();
   await page.keyboard.press('Escape');
   await page.goto('/cart');

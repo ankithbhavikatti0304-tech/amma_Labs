@@ -9,6 +9,19 @@ export function watchConsole(page: Page) {
   return { assertClean: () => expect(errors, `console errors:\n${errors.join('\n')}`).toEqual([]) };
 }
 
+/**
+ * Open the search palette with the "/" shortcut. The key handler only exists once the page has
+ * hydrated, so a press that lands too early is lost; keep pressing until the palette is there.
+ */
+export async function openSearch(page: Page) {
+  const box = page.getByRole('searchbox', { name: 'Search tests' });
+  await expect(async () => {
+    if (!(await box.isVisible())) await page.keyboard.press('/');
+    await expect(box).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  return box;
+}
+
 let counter = 0;
 /** A unique valid Indian mobile number per call. */
 export const newPhone = () => `9${String(Date.now()).slice(-6)}${String(100 + (counter++ % 900))}`.slice(0, 10);

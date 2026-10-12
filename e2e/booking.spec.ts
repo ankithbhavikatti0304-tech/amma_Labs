@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { login, newPhone, watchConsole } from './helpers';
+import { login, newPhone, openSearch, watchConsole } from './helpers';
 
 test('a patient finds a test, books it, and tracks the order', async ({ page }) => {
   const console_ = watchConsole(page);
@@ -7,8 +7,7 @@ test('a patient finds a test, books it, and tracks the order', async ({ page }) 
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Lab tests at home');
 
   // Search as you type: opens with "/", results appear without leaving the page.
-  await page.keyboard.press('/');
-  await page.getByRole('searchbox', { name: 'Search tests' }).fill('thyroid');
+  await (await openSearch(page)).fill('thyroid');
   const first = page.locator('.pal-row').first();
   await expect(first).toContainText(/thyroid/i);
   await first.getByRole('button', { name: /^Add/ }).click();
